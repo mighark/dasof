@@ -6,21 +6,35 @@ class Producto
         @distrito = distrito
         @tipo = tipo
         @refr = refr
-
-        attr_accessor :desc, :peso, :dir, :distrito, :tipo
+        @error = ""
     end
+    
+    attr_accessor :desc, :peso, :dir, :distrito, :tipo, :error
 
     def validarPeso
         if @tipo == "fragil"
-            @peso <= 1000
+            valido = @peso <= 1000
         else
-            @peso <= 5000
+            valido = @peso <= 5000
         end
+        if(!valido)
+            @error = "Peso máximo superado"
+        end
+        return valido
     end
 
     def validarDistrito
-        #TODO ficheros
-        true
+        file = File.open("distritos.txt", "r") do |file|
+            while linea = file.gets
+                #compara que el distrito este en el fichero
+                #chomp quita los \r y \n de la linea
+                if linea.chomp == @distrito
+                    return true
+                end
+            end
+        end
+        @error = "Distrito inválido"
+        return false
     end
 
     def validar
@@ -29,10 +43,16 @@ class Producto
 
 end
 
+class ProductoInvalido < StandardError
+    def initialize(msg="Producto invalido")
+        super
+      end
+end
+
 require "Date"
 
 class Pedido
-    def initialize
+    def initialize()
         @productos = []
     end
 
@@ -41,27 +61,24 @@ class Pedido
     end
 
     def darAlta
-        unless @productos.find{|x| !x.validar}
-            #@fecha = DateTime.now()
-            puts "success"
+        invalidos = @productos.inject([]){|invalidos,x| if(!x.validar) then invalidos.push(x) end}
+        
+        if !invalidos
+            @fecha = DateTime.now()
         else
-            puts "fail"
+            error = ""
+            invalidos.each{|x| error += "Producto: " + x.desc + ". Error: " + x.error + ". "}
+            raise ProductoInvalido, error
         end
     end
 
 end
 
-end
-
-puts "a"
-
 p = Pedido.new()
-p.addProducto(Producto.new("ejemplo", 100, "noexixte", "nope", "fragil"))
+p.addProducto(Producto.new("ejemplo", 100, "noexixte", "Centro", "fragil"))
 p.darAlta
 
 p2 = Pedido.new()
-p2.addProducto(Producto.new("ejemplo", 1200, "noexixte", "nope", "fragil"))
-p.darAlta
-
-
-
+p2.addProducto(Producto.new("ejemplo", 100, "noexixte", "nope", "fragil"))
+p2.addProducto(Producto.new("ejemplo2", 1200, "noexixte", "nope", "fragil"))
+p2.darAlta
