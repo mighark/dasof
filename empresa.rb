@@ -9,10 +9,8 @@ class Empresa
     attr_accessor :cif
 
 
-    def debug
-        print "Nombre: " + @nombre + " CIF: "
-        print @cif
-        puts ""
+    def to_s
+        return "Nombre: #{@nombre}. CIF: #{@cif} "
     end
 
 end

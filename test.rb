@@ -12,7 +12,7 @@ insertarEmpresa(empresasArray, empresa1)
 insertarEmpresa(empresasArray, empresa2)
 insertarEmpresa(empresasArray, empresarepetida1)
 
-empresasArray.each{|x| x.debug}
+empresasArray.each{|x| puts x}
 
 #test apartado 2
 p = Pedido.new()
