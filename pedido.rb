@@ -5,7 +5,7 @@ class Producto
         @dir = dir
         @distrito = distrito
         @tipo = tipo
-        @refr = refr
+        if(tipo == "alimentacion") then @refr = refr end
         @error = ""
     end
     
