@@ -24,14 +24,3 @@ def insertarEmpresa(empresas, empresa)
         empresas.push(empresa)
     end
 end
-
-empresasArray = []
-empresa1 = Empresa.new("pepesl", 100)
-empresa2 = Empresa.new("pepesl mk2", 101)
-empresarepetida1 = Empresa.new("definitelynotpepesl", 100)
-
-insertarEmpresa(empresasArray, empresa1)
-insertarEmpresa(empresasArray, empresa2)
-insertarEmpresa(empresasArray, empresarepetida1)
-
-empresasArray.each{|x| x.debug}

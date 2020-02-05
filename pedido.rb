@@ -9,7 +9,7 @@ class Producto
         @error = ""
     end
     
-    attr_accessor :desc, :peso, :dir, :distrito, :tipo, :error
+    attr_accessor :desc, :peso, :dir, :distrito, :tipo, :error, :refr
 
     def validarPeso
         if @tipo == "fragil"
@@ -74,11 +74,3 @@ class Pedido
 
 end
 
-p = Pedido.new()
-p.addProducto(Producto.new("ejemplo", 100, "noexixte", "Centro", "fragil"))
-p.darAlta
-
-p2 = Pedido.new()
-p2.addProducto(Producto.new("ejemplo", 100, "noexixte", "nope", "fragil"))
-p2.addProducto(Producto.new("ejemplo2", 1200, "noexixte", "nope", "fragil"))
-p2.darAlta
