@@ -1,15 +1,14 @@
 class Producto
-    def initialize(desc, peso, dir, distrito, tipo, refr=false)
+    def initialize(desc, peso, dir, distrito, tipo)
         @desc = desc
         @peso = peso
         @dir = dir
         @distrito = distrito
         @tipo = tipo
-        if(tipo == "alimentacion") then @refr = refr end
         @error = ""
     end
     
-    attr_accessor :desc, :peso, :dir, :distrito, :tipo, :error, :refr
+    attr_accessor :desc, :peso, :dir, :distrito, :tipo, :error
 
     def validarPeso
         if @tipo == "fragil"
@@ -41,6 +40,10 @@ class Producto
         return validarPeso && validarDistrito
     end
 
+    def to_s
+        return "Descripcion: #{@desc}. Peso: #{@peso}. Direccion: #{@dir}. Distrito: #{@distrito}. Tipo: #{@tipo}."
+    end
+
 end
 
 class ProductoInvalido < StandardError
@@ -53,7 +56,7 @@ require "Date"
 
 class Pedido
     def initialize()
-        @productos = []
+        @productos = Array.new()
     end
 
     def addProducto(producto)
@@ -61,7 +64,7 @@ class Pedido
     end
 
     def darAlta
-        invalidos = @productos.inject([]){|invalidos,x| if(!x.validar) then invalidos.push(x) end}
+        invalidos = @productos.inject(Array.new()){|invalidos,x| if(!x.validar) then invalidos.push(x) end}
         
         if !invalidos
             @fecha = DateTime.now()

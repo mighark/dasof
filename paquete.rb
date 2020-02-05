@@ -6,16 +6,17 @@ class Paquete
     def initialize(id)
         @id = id
         @peso = 0
-        @productos = []
+        @productos = Array.new()
+        @dir = nil
         @fragil = false
         @refr = false
     end
 
-    attr_reader :id
+    attr_reader :id, :dir
 
     def anadirProducto(producto)
         #si hay producto fragil, fin
-        if(!@fragil)
+        if(@fragil)
             return false
         end
 
@@ -26,7 +27,13 @@ class Paquete
         end
 
         #si el paquete es refrigerado y el producto no, fin
-        if(@refr && (producto.tipo != "alimentacion" || producto.refr))
+        if(@refr && producto.tipo != "alimentacion_refr")
+            #fracaso
+            return false
+        end
+
+        #si el producto es refrigerado y el paquete no, fin
+        if(producto.tipo == "alimentacion_refr" && !@refr && @productos.length > 0)
             #fracaso
             return false
         end
@@ -35,9 +42,11 @@ class Paquete
         if(producto.peso + @peso <= PesoMax)
             @productos.push(producto)
             #ajustar variables de paquete
+            @peso += producto.peso
+            @dir = producto.dir
             if producto.tipo == "fragil"
                 @fragil = true
-            elsif producto.tipo == "alimentacion" && producto.refr
+            elsif producto.tipo == "alimentacion_refr"
                 @refr = true
             end
             #exito
@@ -47,4 +56,27 @@ class Paquete
         return false
     end
 
+    def to_s
+        return "Id: #{@id}. Productos: #{@productos}"
+    end
 end
+
+
+def anadirAPaquetes(paquetes, producto)
+    paquetesDireccion = paquetes.select{|x| x.dir == producto.dir}
+    #puts paquetesDireccion
+    done = paquetesDireccion.inject(false){|done, x| done = done || x.anadirProducto(producto)}
+    #puts done
+    if !done
+        paquete = Paquete.new(paquetes.length)
+        paquete.anadirProducto(producto)
+        paquetes.push(paquete)
+    end
+end
+
+class Pedido
+    def empaquetarPedido(paquetes)
+        @productos.each{|x| anadirAPaquetes(paquetes, x)}
+    end
+end
+
