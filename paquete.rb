@@ -1,4 +1,3 @@
-#TODO mover cada parte del codigo a un script aparte para que no pete esto
 require_relative "pedido"
 
 class Paquete
@@ -12,7 +11,7 @@ class Paquete
         @refr = false
     end
 
-    attr_reader :id, :dir
+    attr_reader :id, :dir, :peso
 
     def anadirProducto(producto)
         #si hay producto fragil, fin
@@ -56,6 +55,10 @@ class Paquete
         return false
     end
 
+    def numProductos
+        @productos.length
+    end
+
     def to_s
         return "Id: #{@id}. Productos: #{@productos}"
     end
@@ -63,10 +66,8 @@ end
 
 
 def anadirAPaquetes(paquetes, producto)
-    paquetesDireccion = paquetes.select{|x| x.dir == producto.dir}
-    #puts paquetesDireccion
+    paquetesDireccion = paquetes.select{|x| x.dir.dir == producto.dir.dir}
     done = paquetesDireccion.inject(false){|done, x| done = done || x.anadirProducto(producto)}
-    #puts done
     if !done
         paquete = Paquete.new(paquetes.length)
         paquete.anadirProducto(producto)

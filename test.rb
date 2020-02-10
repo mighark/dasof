@@ -1,8 +1,11 @@
 require_relative "empresa"
 require_relative "pedido"
 require_relative "paquete"
+require_relative "reparto"
 
 #test apartado 1
+puts "Test apartado 1"
+
 empresasArray = Array.new()
 empresa1 = Empresa.new("pepesl", 100)
 empresa2 = Empresa.new("pepesl mk2", 101)
@@ -15,6 +18,8 @@ insertarEmpresa(empresasArray, empresarepetida1)
 empresasArray.each{|x| puts x}
 
 #test apartado 2
+puts "Test apartado 2"
+
 p = Pedido.new()
 p.addProducto(Producto.new("ejemplo", 100, "noexixte", "Centro", "fragil"))
 p.darAlta
@@ -25,11 +30,13 @@ p2.addProducto(Producto.new("ejemplo2", 1200, "noexixte", "nope", "fragil"))
 begin
     p2.darAlta
 rescue ProductoInvalido => error
-    print "Pedido invalido. Errores: "
+    puts "Pedido invalido. Errores: "
     puts error
 end
 
 #test apartado 3
+puts "Test apartado 3"
+
 paquetes = Array.new()
 
 pr1 = Producto.new("ejemplo1", 100, "noexixte", "Centro", "fragil")
@@ -61,3 +68,15 @@ pTest.addProducto(pr8)
 pTest.empaquetarPedido(paquetes)
 
 puts paquetes
+
+#test apartado 4
+puts "Test apartado 4"
+
+camiones = Array.new()
+camiones.push(Camion.new("1234-BCD", 20, 300))
+camiones.push(Camion.new("9876-ZYX", 2, 1000))
+paquetesSinEntregar = Array.new(paquetes)
+
+planificarReparto("1-1-1", "mañana", "Centro", paquetesSinEntregar, camiones)
+planificarReparto("1-1-1", "mañana", "Centro", paquetesSinEntregar, camiones)
+camiones.each{|x| puts x.repartos}

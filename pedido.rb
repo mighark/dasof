@@ -1,9 +1,17 @@
+class Direccion
+    def initialize(dir, distrito)
+        @dir = dir
+        @distrito = distrito
+    end
+
+    attr_accessor :dir, :distrito
+end
+
 class Producto
     def initialize(desc, peso, dir, distrito, tipo)
         @desc = desc
         @peso = peso
-        @dir = dir
-        @distrito = distrito
+        @dir = Direccion.new(dir, distrito)
         @tipo = tipo
         @error = ""
     end
@@ -27,7 +35,7 @@ class Producto
             while linea = file.gets
                 #compara que el distrito este en el fichero
                 #chomp quita los \r y \n de la linea
-                if linea.chomp == @distrito
+                if linea.chomp == @dir.distrito
                     return true
                 end
             end
@@ -41,7 +49,7 @@ class Producto
     end
 
     def to_s
-        return "Descripcion: #{@desc}. Peso: #{@peso}. Direccion: #{@dir}. Distrito: #{@distrito}. Tipo: #{@tipo}."
+        return "Descripcion: #{@desc}. Peso: #{@peso}. Direccion: #{@dir.dir}. Distrito: #{@dir.distrito}. Tipo: #{@tipo}."
     end
 
 end
