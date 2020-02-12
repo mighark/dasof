@@ -77,6 +77,58 @@ camiones.push(Camion.new("1234-BCD", 20, 300))
 camiones.push(Camion.new("9876-ZYX", 2, 1000))
 paquetesSinEntregar = Array.new(paquetes)
 
-planificarReparto("1-1-1", "mañana", "Centro", paquetesSinEntregar, camiones)
-planificarReparto("1-1-1", "mañana", "Centro", paquetesSinEntregar, camiones)
+planificarReparto(Date.new(2001,1,1), "mañana", "Centro", paquetesSinEntregar, camiones)
+planificarReparto(Date.new(2001,1,1), "mañana", "Centro", paquetesSinEntregar, camiones)
 camiones.each{|x| puts x.repartos}
+
+#test apartado 5
+puts "Test apartado 5"
+
+camion = nil
+while(camion == nil)
+    puts "Introduce matricula: "
+    matricula = gets
+    camion = camiones.find{|x| x.matricula == matricula.chomp}
+    if(!camion)
+        puts "No se ha encontrado el camión. Inténtelo de nuevo."
+    end
+end
+
+repartos = Array.new()
+while(repartos.length <= 0) 
+    puts "Introduce fecha (formato: D-M-A): "
+    fecha = Date.strptime(gets, "%d-%m-%y")
+    repartos = camion.repartos.select{|x| x.fecha == fecha}
+    if(repartos.length <= 0)
+        puts "No se han encontrado repartos en esa fecha. Inténtelo de nuevo."
+    end
+end
+
+reparto = nil
+while(reparto == nil) 
+    puts "Introduce turno: "
+    turno = gets
+    reparto = camion.repartos.find{|x| x.turno == turno.chomp}
+    if(!reparto) 
+        puts "No se ha encontrado un reparto en esa fecha y turno. Inténtelo de nuevo."
+    end
+end
+
+entregados = reparto.verEntregados.collect{|x| x.id}
+noEntregados = reparto.verNoEntregados.collect{|x| x.id}
+puts "Paquetes entregados: #{entregados}"
+puts "Paquetes no entregados: #{noEntregados}"
+
+puts "Introduce id del paquete entregado (\"salir\" para salir):"
+entregado = gets
+if(entregado != "salir")
+    id = Integer(entregado)
+    if (!reparto.entregado(id))
+        puts "Id de paquete no encontrado"
+    end
+end
+
+puts "Entregados: "
+puts reparto.verEntregados
+puts "No entregados: "
+puts reparto.verNoEntregados

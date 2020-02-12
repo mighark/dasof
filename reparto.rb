@@ -6,6 +6,9 @@ class Camion
         @repartos = Array.new()
     end
 
+    attr_accessor :matricula, :maxPaquetes, :maxPeso
+    attr_reader :repartos
+
     def disponibleReparto(fecha, turno)
         @repartos.inject(true){|avlb, x| avlb = avlb && (x.fecha != fecha || x.turno != turno)}
     end
@@ -29,8 +32,6 @@ class Camion
         @repartos.push(reparto)
     end
 
-    attr_accessor :matricula, :maxPaquetes, :maxPeso
-    attr_reader :repartos
 end
 
 class Reparto
@@ -38,9 +39,29 @@ class Reparto
         @fecha = fecha
         @turno = turno
         @paquetes = paquetes
+        @entregados = Array.new()
     end
 
     attr_accessor :fecha, :turno
+
+    def verNoEntregados
+        @paquetes
+    end
+
+    def verEntregados
+        @entregados
+    end
+
+    def entregado(id)
+        paquete = @paquetes.find{|x| x.id == id}
+        if(paquete)
+            @paquetes.delete(paquete)
+            @entregados.push(paquete)
+            return true
+        else
+            return false
+        end
+    end
 
     def to_s
         return "Fecha: #{@fecha}. Turno: #{@turno}. Paquetes: #{@paquetes}."

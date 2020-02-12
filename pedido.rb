@@ -60,7 +60,7 @@ class ProductoInvalido < StandardError
       end
 end
 
-require "Date"
+require "date"
 
 class Pedido
     def initialize()
