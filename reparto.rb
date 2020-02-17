@@ -45,11 +45,11 @@ class Reparto
     attr_accessor :fecha, :turno
 
     def verNoEntregados
-        @paquetes
+        @paquetes.each{|x| puts x}
     end
 
     def verEntregados
-        @entregados
+        @entregados.each{|x| puts x}
     end
 
     def entregado(id)

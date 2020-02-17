@@ -164,9 +164,9 @@ class Aplicacion
         end
         
         puts "Entregados: "
-        puts reparto.verEntregados
+        reparto.verEntregados
         puts "No entregados: "
-        puts reparto.verNoEntregados
+        reparto.verNoEntregados
 
     end
 

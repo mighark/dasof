@@ -60,7 +60,9 @@ class Paquete
     end
 
     def to_s
-        return "Id: #{@id}. Productos: #{@productos}"
+        productos = ""
+        @productos.each{|x| productos += "#{x.desc}. Peso: #{x.peso}. Tipo: #{x.tipo}"}
+        return "Id: #{@id}. Productos: " + productos
     end
 end
 
