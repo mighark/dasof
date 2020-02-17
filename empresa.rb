@@ -6,7 +6,7 @@ class Empresa
     end
 
     attr_accessor :nombre
-    attr_accessor :cif
+    attr_reader :cif
 
 
     def to_s
@@ -16,8 +16,6 @@ class Empresa
 end
 
 def insertarEmpresa(empresas, empresa)
-    cif = empresa
-
     unless empresas.find{|x| (x.cif == empresa.cif)}
         empresas.push(empresa)
     end

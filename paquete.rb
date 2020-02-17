@@ -65,19 +65,20 @@ class Paquete
 end
 
 
-def anadirAPaquetes(paquetes, producto)
+def anadirAPaquetes(paquetes, sinEntregar, producto)
     paquetesDireccion = paquetes.select{|x| x.dir.dir == producto.dir.dir}
     done = paquetesDireccion.inject(false){|done, x| done = done || x.anadirProducto(producto)}
     if !done
         paquete = Paquete.new(paquetes.length)
         paquete.anadirProducto(producto)
         paquetes.push(paquete)
+        sinEntregar.push(paquete)
     end
 end
 
 class Pedido
-    def empaquetarPedido(paquetes)
-        @productos.each{|x| anadirAPaquetes(paquetes, x)}
+    def empaquetarPedido(paquetes, sinEntregar)
+        @productos.each{|x| anadirAPaquetes(paquetes, sinEntregar, x)}
     end
 end
 

@@ -72,15 +72,20 @@ class Pedido
     end
 
     def darAlta
-        invalidos = @productos.inject(Array.new()){|invalidos,x| if(!x.validar) then invalidos.push(x) end}
+        invalidos = Array.new()
+        @productos.each(){|x| if(!x.validar) then invalidos.push(x) end}
         
-        if !invalidos
+        if invalidos.length <= 0
             @fecha = DateTime.now()
         else
             error = ""
             invalidos.each{|x| error += "Producto: " + x.desc + ". Error: " + x.error + ". "}
             raise ProductoInvalido, error
         end
+    end
+
+    def to_s
+        return @productos.to_s
     end
 
 end
