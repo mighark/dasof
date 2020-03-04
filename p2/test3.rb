@@ -9,6 +9,11 @@ class FichaRoja
     def to_s; "r"; end
 
 end
+
+class FichaVerde
+    def to_s; "v"; end
+
+end
 # definición de la matriz y sus condiciones
 conecta4 = MatrizCondicionada.new(6,7)
 conecta4.addCondicionObligatoria{|matriz, elem| elem.is_a? FichaRoja or elem.is_a? FichaBlanca}
@@ -21,6 +26,8 @@ conecta4.set(0,0,FichaBlanca.new)# se añade el elemento
 conecta4.set(0,1,FichaRoja.new)# se añade el elemento
 conecta4.set(1,1,FichaBlanca.new)# se añade el elemento
 conecta4.set(2,4,FichaRoja.new) # set falla porque no se cumple ninguna condición alternativa
+conecta4.set(0,0,FichaRoja.new) # set falla porque no se cumple una condición obligatoria
+conecta4.set(0,2,FichaVerde.new) # set falla porque no se cumple una condición obligatoria
 
 # imprimimos la matriz por pantalla
 conecta4.each do|matriz, fila, columna|

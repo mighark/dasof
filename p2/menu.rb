@@ -2,7 +2,7 @@ module MenuGenerico
 
     def menu
         objetos = Array.new
-        #bucle infinito se rompe con el return en el primer if
+        #bucle infinito: se rompe si no se pulsa 1
         while 0 == 0
             puts "Pulsa 1 para crear #{name}, enter para salir"
             input = gets
@@ -14,7 +14,7 @@ module MenuGenerico
             objeto = self.new
             instancia_vars = objeto.instance_variables
 
-            #crear id
+            #crear id: comprueba que no este repetido
             if(self.respond_to?(:id))
                 repetido = true
                 id_symbol = "@#{self.id}"
@@ -26,7 +26,6 @@ module MenuGenerico
                         repetido = false
                     end
                 end
-                objeto.instance_variable_set("@#{self.id}", id)
 
                 #quita el id de la lista de variables de instancia
                 instancia_vars.delete("@#{self.id}".to_sym)

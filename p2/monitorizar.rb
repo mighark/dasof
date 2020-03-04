@@ -9,7 +9,7 @@ def monitorizar(objeto)
         #crea variables para contar invocaciones de cada metodo
         objeto.instance_variable_set(("@" + x.to_s + "counter"), 0)
 
-        #crea variables para contar invocaciones de cada metodo
+        #crea variables en la clase para contar invocaciones totales de cada metodo
         #solo si la clase no tiene monitorizacion
         if(!objeto.class.respond_to?(:monitorizar))
             objeto.class.class_variable_set(("@@" + x.to_s + "counter"), 0)
