@@ -18,19 +18,29 @@ class Conferencia
     attr_reader :nombre, :fechaIni, :fechaFin, :lugar
 
     def crearSesion(nombre, fecha, hora)
-        fecha = Date.parse(fecha)
+        #nombre debe ser unico
+        if @sesiones.find{|x| x.nombre == nombre} != nil
+            raise ExcepcionLDE.new, "Nombre de sesión debe ser único."
+        end
+
         if fecha < self.fechaIni || fecha > self.fechaFin
-            raise ExcepcionLDE.new, "Fecha de sesion debe estar entre fecha de inicio y fin de conferencia."
+            raise ExcepcionLDE.new, "Fecha de sesión debe estar entre fecha de inicio y fin de conferencia."
         end
         #hora en intervalos pedidos
         if hora < 8 || (hora > 12 && hora < 14) || hora > 18
-            raise ExcepcionLDE.new, "Sesiones deben ser entre 8h y 12h (mañana) o entre 14h y 18h (tarde)"
+            raise ExcepcionLDE.new, "Sesiones deben ser entre 8h y 12h (mañana) o entre 14h y 18h (tarde)."
         end
 
-        sesionesFecha = @sesiones.select{|x| x.fecha ==fecha}
+        sesionesFecha = @sesiones.select{|x| x.fecha == fecha}
         #mismo dia y hora no se puede dos
         if sesionesFecha.find{|x| x.hora == hora} != nil
-            raise ExcepcionLDE.new, "No se permiten dos sesiones en la misma fecha y hora"
+            raise ExcepcionLDE.new, "No se permiten dos sesiones en la misma fecha y hora."
+        end
+
+        #no empieza menos de 2h antes de una actividad social
+        actividadFecha = @actividades_sociales.find{|x| x.fecha == fecha}
+        if actividadFecha != nil && actividadFecha.hora < hora + 2
+            raise ExcepcionLDE.new, "Una sesión no puede empezar menos de 2h antes que una actividad social."
         end
 
         #comprobar mañana o tarde
@@ -39,14 +49,14 @@ class Conferencia
             sesionesManana = sesionesFecha.select{|x| x.hora <= 12}
             #maximo 2 mañana
             if sesionesManana.length > 1
-                raise ExcepcionLDE.new, "No se permiten más de dos sesiones diarias por la mañana"
+                raise ExcepcionLDE.new, "No se permiten más de dos sesiones diarias por la mañana."
             end
         else
             #tarde: 14 a 18
             sesionesTarde = sesionesFecha.select{|x| x.hora >= 14}
             #maximo 2 tarde
             if sesionesTarde.length > 1
-                raise ExcepcionLDE.new, "No se permiten más de dos sesiones diarias por la tarde"
+                raise ExcepcionLDE.new, "No se permiten más de dos sesiones diarias por la tarde."
             end
             
         end
@@ -56,28 +66,66 @@ class Conferencia
     end
 
     def crearActividadSocial(desc, fecha, hora)
-        fecha = Date.parse(fecha)
         if fecha < self.fechaIni || fecha > self.fechaFin
-            raise ExcepcionLDE.new, "Fecha de actividad debe estar entre fecha de inicio y fin de conferencia."
+            raise ExcepcionLDE.new, "Fecha de actividad debe estar entre fecha de inicio y fecha de fin de la conferencia."
         end
         #maximo 1 al dia
-        actividadesFecha = @actividades_sociales.select{|x| x.fecha == fecha}
-        if actividadesFecha.length > 0
-            raise ExcepcionLDE.new, "No se permiten dos actividades sociales el mismo dia"
+        actividadFecha = @actividades_sociales.find{|x| x.fecha == fecha}
+        if actividadFecha != nil
+            raise ExcepcionLDE.new, "No se permiten dos actividades sociales el mismo día."
         end
         #empieza min 2 horas tras el comienzo de ultima sesion
         ultimaSesion = @sesiones.select{|x| x.fecha == fecha}.sort{|a, b| b.hora <=> a.hora}.first
-        if ultimaSesion != nil && hora <= ultimaSesion.hora + 2
-            raise ExcepcionLDE.new, "Las actividades sociales deben comenzar como minimo 2 horas despues de la ultima sesion"
+        if ultimaSesion != nil && hora < ultimaSesion.hora + 2
+            raise ExcepcionLDE.new, "Las actividades sociales deben comenzar como mínimo 2 horas después de la última sesión."
         end
 
         @actividades_sociales.push(ActividadSocial.new(desc, fecha, hora))
         
     end
 
+    def crearArticulo(titulo)
+        if(@sesiones.empty?)
+            raise ExcepcionLDE.new, "Los artículos deben presentarse en una sesión."
+        end
+        @sesiones[@sesiones.length - 1].crearArticulo(titulo)
+    end
+
+    def crearAutor(nombre, afil, nacion)
+        if(@sesiones.empty?)
+            raise ExcepcionLDE.new, "Los autores deben añadirse a un artículo."
+        end
+        @sesiones[@sesiones.length - 1].crearAutor(nombre, afil, nacion)
+    end
+
+    def asignarPonente(nombre)
+        if(@sesiones.empty?)
+            raise ExcepcionLDE.new, "El ponente debe ser un autor de un artículo."
+        end
+        @sesiones[@sesiones.length - 1].asignarPonente(nombre)
+    end
+
+    def asignarModerador(nombre)
+        if(@sesiones.empty?)
+            raise ExcepcionLDE.new, "El moderador debe ser un autor de un artículo de la sesión."
+        end
+        @sesiones[@sesiones.length - 1].asignarModerador(nombre)
+    end
+
+    def cerrar
+        (@fechaIni..@fechaFin).each{|fecha|
+            if @sesiones.find{|x| x.fecha == fecha} == nil
+                raise ExcepcionLDE.new, "Debe haber al menos una sesión diaria."
+            end
+        }
+        @sesiones.each{|x| x.cerrar}
+    end
+
     def debug
-        @sesiones.each{|x| puts "Nombre: #{x.nombre}. Fecha: #{x.fecha}. Hora: #{x.hora}"}
-        @actividades_sociales.each{|x| puts "Desc: #{x.desc}. Fecha: #{x.fecha}. Hora: #{x.hora}"}
+        puts "Nombre: #{@nombre}. Lugar: #{@lugar}. Fecha de inicio: #{@fechaIni}. Fecha de fin: #{@fechaFin}."
+        puts "Sesiones:"
+        @sesiones.each{|x| x.debug}
+        @actividades_sociales.each{|x| x.debug}
     end
 end
 
@@ -87,16 +135,49 @@ class Sesion
         @fecha = fecha
         @hora = hora
         @articulos = Array.new
+        @moderador = nil
     end
 
     attr_reader :nombre, :fecha, :hora
 
-    def articulo(titulo)
+    def crearArticulo(titulo)
         @articulos.push(Articulo.new(titulo))
     end
 
-    def moderador(nombre)
+    def crearAutor(nombre, afil, nacion)
+        if(@articulos.empty?)
+            raise ExcepcionLDE.new, "Los autores deben añadirse a un artículo."
+        end
+        @articulos[@articulos.length - 1].crearAutor(nombre, afil, nacion)
+    end
 
+    def asignarPonente(nombre)
+        if(@articulos.empty?)
+            raise ExcepcionLDE.new, "El ponente debe ser un autor de un artículo."
+        end
+        @articulos[@articulos.length - 1].asignarPonente(nombre)
+    end
+
+    def asignarModerador(nombre)
+        @moderador = @articulos.collect{|x| x.getAutor(nombre)}.find{|x| x != nil}
+        if @moderador == nil
+            raise ExcepcionLDE.new, "El moderador debe ser un autor de un artículo de la sesión."
+        end
+    end
+
+    def cerrar
+        if @articulos.empty?
+            raise ExcepcionLDE.new, "Cada sesión debe tener al menos un artículo."
+        elsif @moderador == nil
+            raise ExcepcionLDE.new, "Cada sesión debe tener un moderador."
+        end
+        @articulos.each{|x| x.cerrar}
+    end
+
+    def debug
+        puts "\tNombre: #{@nombre}. Fecha: #{@fecha}. Hora de comienzo: #{@hora}."
+        puts "\tArtículos:"
+        @articulos.each{|x| x.debug}
     end
 end
 
@@ -108,25 +189,63 @@ class ActividadSocial
     end
 
     attr_reader :desc, :fecha, :hora
+
+    def debug
+        puts "\tDescripción: #{@desc}. Fecha: #{@fecha}. Hora de comienzo: #{@hora}."
+    end
 end
 
 class Articulo
     def initialize(titulo)
+        @titulo = titulo
+        @autores = Array.new
+        @ponente = nil
+    end
+
+    attr_reader :titulo
+
+    def crearAutor(nombre, afil, nacion)
+        @autores.push(Autor.new(nombre, afil, nacion))
+    end
+
+    def getAutor(nombre)
+        return @autores.find{|x| x.nombre == nombre}
+    end
+
+    def asignarPonente(nombre)
+        @ponente = getAutor(nombre)
+        if @ponente == nil
+            raise ExcepcionLDE.new, "El ponente debe ser un autor del artículo."
+        end
+    end
+
+    def cerrar
+        if @autores.empty?
+            raise ExcepcionLDE.new, "Todo artículo debe tener al menos un autor."
+        elsif @ponente == nil
+            raise ExcepcionLDE.new, "Todo artículo debe tener un ponente."
+        end
 
     end
 
-    def autor(nombre, afil, nacion)
-
-    end
-
-    def ponente(nombre)
-
+    def debug
+        puts "\t\tTitulo: #{@titulo}."
+        puts "\t\tAutores:"
+        @autores.each{|x| x.debug}
     end
 end
 
 class Autor
     def initialize(nombre, afil, nacion)
+        @nombre = nombre
+        @afil = afil
+        @nacion = nacion
+    end
 
+    attr_reader :nombre, :afil, :nacion
+
+    def debug
+        puts "\t\t\tNombre: #{@nombre}. Afiliación: #{@afil}. Nacionalidad: #{@nacion}."
     end
 end
 
@@ -135,49 +254,61 @@ class ExcepcionLDE < RuntimeError
 end
 
 class ConferenciaLDE
-    def self.conferencia(nombre, lugar, fechaIni, fechaFin)
+    def self.conferencia(nombre, lugar, fechaIni, fechaFin=nil)
+        if fechaFin == nil
+            fechaFin = fechaIni
+        end
         @conferencia = Conferencia.new(nombre, fechaIni, fechaFin, lugar)
         yield if block_given?
-        #minimo 1 sesion
-
-        @conferencia.debug
+        #minimo 1 sesion cada dia
+        @conferencia.cerrar
     end
 
     def self.sesion(nombre, hora, fecha=nil)
         if fecha == nil
             #si fechaIni = fechaFin no se especifica fecha
             if @conferencia.fechaIni != @conferencia.fechaFin
-                raise ExcepcionLDE.new, "Debe especificar fecha de la sesion"
+                raise ExcepcionLDE.new, "Conferencia dura más de un día: debe especificar fecha de la sesión."
             end
             fecha = @conferencia.fechaIni
+        else
+            fecha = Date.parse(fecha)
         end
         @conferencia.crearSesion(nombre, fecha, hora)
+        yield if block_given?
     end
 
     def self.actividad_social(desc, hora, fecha=nil)
         if fecha == nil
             #si fechaIni = fechaFin no se especifica fecha
             if @conferencia.fechaIni != @conferencia.fechaFin
-                raise ExcepcionLDE.new, "Debe especificar fecha de la sesion"
+                raise ExcepcionLDE.new, "Conferencia dura más de un día: debe especificar fecha de la actividad social."
             end
             fecha = @conferencia.fechaIni
+        else
+            fecha = Date.parse(fecha)
         end
         @conferencia.crearActividadSocial(desc, fecha, hora)
     end
 
-    def self.articulo(nombre)
-
+    def self.articulo(titulo)
+        @conferencia.crearArticulo(titulo)
+        yield if block_given?
     end
 
-    def self.autor(nombre, asoc, nacion)
-
+    def self.autor(nombre, afil, nacion)
+        @conferencia.crearAutor(nombre, afil, nacion)
     end
 
     def self.ponente(nombre)
-
+        @conferencia.asignarPonente(nombre)
     end
 
     def self.moderador(nombre)
+        @conferencia.asignarModerador(nombre)
+    end
 
+    def self.ver
+        @conferencia.debug
     end
 end
