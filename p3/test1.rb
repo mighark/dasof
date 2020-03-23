@@ -45,6 +45,7 @@ class Test1 < ConferenciaLDE
         end
     end
     ver
+    imprimir_html
 end
 
 puts

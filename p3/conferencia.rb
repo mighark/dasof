@@ -121,6 +121,41 @@ class Conferencia
         @sesiones.each{|x| x.cerrar}
     end
 
+    def imprimir_html
+        #lista de autores: se rellena al imprimir el fichero de conferencia
+        autores = Array.new()
+        File.open(@nombre + " Sesiones.html", "w") do |file|
+            file.puts "#{@nombre}: de #{@fechaIni} a #{@fechaFin} en #{@lugar}."
+            file.puts "Sesiones:"
+            @sesiones.sort{|e1,e2|
+                #ordenar por fecha y hora
+                if e1.fecha == e2.fecha
+                    e1.hora <=> e2.hora
+                else
+                    e1.fecha <=> e2.fecha
+                end
+            }.each{|x| x.imprimir_html(file, autores)}
+        end
+        #lista de autores se imprime en fichero
+        File.open(@nombre + " Autores.html", "w") do |file|
+            autores.sort{|e1, e2| e1[0].nombre <=> e2[0].nombre}.each{|x|
+                #elementos de la lista de autores: autor, lista de articulos que presenta, lista de sesiones que modera
+                autor = x[0]
+                articulos = x[1]
+                sesiones_modera = x[2]
+                file.puts "#{autor.nombre}. Afiliación: #{autor.afil}. Nacionalidad: #{autor.nacion}."
+                file.puts "Articulos que presenta:"
+                articulos.each{|x| file.puts "\t#{x.titulo}."}
+                #imprime las sesiones que modera solo si modera alguna para reducir ruido
+                if sesiones_modera.length > 0
+                    file.puts "Sesiones que modera:"
+                    sesiones_modera.each{|x| file.puts "\t#{x.nombre}."}
+                end
+                file.puts
+            }
+        end
+    end
+
     def debug
         puts "Nombre: #{@nombre}. Lugar: #{@lugar}. Fecha de inicio: #{@fechaIni}. Fecha de fin: #{@fechaFin}."
         puts "Sesiones:"
@@ -172,6 +207,22 @@ class Sesion
             raise ExcepcionLDE.new, "Cada sesión debe tener un moderador."
         end
         @articulos.each{|x| x.cerrar}
+    end
+
+    def imprimir_html(file, autores)
+        file.puts "\tNombre de sesión: #{@nombre}. Fecha: #{@fecha}. Hora de comienzo: #{@hora}. Moderador: #{@moderador.nombre}."
+        file.puts "\tArticulos presentados:"
+        @articulos.each{|x| x.imprimir_html(file, autores)}
+        #rellena lista de autores: sesiones moderadas
+        moderadores_a_html(autores)
+        file.puts
+    end
+
+    def moderadores_a_html(lista)
+        autor_en_lista = lista.find{|x| x[0].nombre == @moderador.nombre}
+        if(autor_en_lista != nil)
+            autor_en_lista[2].push(self)
+        end
     end
 
     def debug
@@ -228,6 +279,24 @@ class Articulo
 
     end
 
+    def imprimir_html(file, autores)
+        file.print "\t\t*#{@titulo}. Autores: "
+        @autores.each{|x| file.print "#{x.nombre}, "}
+        file.puts "\tPonente: #{@ponente.nombre}"
+        #rellena lista de autores: autores y articulos presentados
+        @autores.each{|x| x.autor_a_html(autores)}
+        autores_a_html(autores)
+    end
+
+    def autores_a_html(lista)
+        @autores.each{|autor|
+            autor_en_lista = lista.find{|x| x[0].nombre == autor.nombre}
+            if(autor_en_lista != nil)
+                autor_en_lista[1].push(self)
+            end
+        }
+    end
+
     def debug
         puts "\t\tTitulo: #{@titulo}."
         puts "\t\tAutores:"
@@ -243,6 +312,14 @@ class Autor
     end
 
     attr_reader :nombre, :afil, :nacion
+
+    def autor_a_html(lista)
+        #si aun no esta en la lista de autores se inserta
+        autor = lista.find{|x| x[0].nombre == @nombre}
+        if(autor == nil)
+            lista.push([self, Array.new, Array.new])
+        end
+    end
 
     def debug
         puts "\t\t\tNombre: #{@nombre}. Afiliación: #{@afil}. Nacionalidad: #{@nacion}."
@@ -310,5 +387,9 @@ class ConferenciaLDE
 
     def self.ver
         @conferencia.debug
+    end
+
+    def self.imprimir_html
+        @conferencia.imprimir_html
     end
 end
