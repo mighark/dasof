@@ -34,7 +34,7 @@ class Test1 < ConferenciaLDE
         sesion "mañana2", 8, "2020-5-3" do
             articulo "articulo10" do
                 autor "Definitely Not Pepito", "cosas", "meh"
-                autor "Obviosly Not Juanito", "xd", "tinfoil"
+                autor "Obviously Not Juanito", "xd", "tinfoil"
                 ponente "Definitely Not Pepito"
             end
             articulo "articulo11" do
