@@ -223,4 +223,8 @@ module SistemaLDE
 
     end
 
+    def self.aplicar(objetos)
+        #aplicar sistema al conjunto de objetos
+    end
+
 end
