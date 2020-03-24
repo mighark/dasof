@@ -32,3 +32,97 @@ test = SistemaLDE.sistema {
 }
 
 test.debug
+
+puts
+puts "Comprobar situaciones de error:"
+
+test2 = SistemaLDE.sistema {
+    regla :ejemplo do
+        patron_entrada 
+        patron_salida
+    end
+
+    begin
+        #nombre de regla unico
+        regla :ejemplo do
+            patron_entrada 
+            patron_salida
+        end
+    rescue SistemaLDE::ExcepcionLDE => exception
+        puts exception
+    end
+
+    begin 
+        regla :ejemplo2 do
+            #regla debe tener un patron de salida
+            patron_entrada
+        end
+    rescue SistemaLDE::ExcepcionLDE => exception
+        puts exception
+    end
+
+    begin 
+        regla :ejemplo2 do
+            #regla debe tener un patron de entrada
+            patron_salida
+        end
+    rescue SistemaLDE::ExcepcionLDE => exception
+        puts exception
+    end
+
+    regla :ejemplo2 do
+        patron_entrada do
+            variable "1", :Persona
+            #nombre de variable unico por patron
+            begin
+                variable "1", :Animal
+            rescue SistemaLDE::ExcepcionLDE => exception
+                puts exception
+            end
+        end
+        patron_salida
+    end
+}
+
+begin
+    test3 = SistemaLDE.sistema {
+        regla :ejemplo do
+            patron_entrada do
+                variable "1", :Persona
+            end
+            #si patron de entrada y de salida tienen variable con mismo nombre, debe tener mismo tipo
+            patron_salida do
+                variable "1", :Animal
+            end
+        end
+    }
+rescue SistemaLDE::ExcepcionLDE => exception
+    puts exception
+end
+
+
+begin
+    test4 = SistemaLDE.sistema {
+        #bloque no puede estar vacio
+        bloque
+    }
+rescue SistemaLDE::ExcepcionLDE => exception
+    puts exception
+end
+
+
+begin
+    test5 = SistemaLDE.sistema {
+        #bloque no puede contener solo otro bloque
+        bloque do
+            bloque do
+                regla :ejemplo do
+                    patron_entrada
+                    patron_salida
+                end
+            end
+        end
+    }
+rescue SistemaLDE::ExcepcionLDE => exception
+    puts exception
+end

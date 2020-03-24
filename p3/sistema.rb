@@ -93,7 +93,7 @@ module SistemaLDE
                     variable.code(proc)
                 end
             else
-                raise ExcepcionLDE.new, "Las reglas deben tener nombre único."
+                raise ExcepcionLDE.new, "Las variables de un patrón deben tener nombre único."
             end
             @variables.push(variable)
 
