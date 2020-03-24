@@ -11,12 +11,11 @@ module SistemaLDE
     
     class Sistema
         def initialize
-            @reglas = Array.new
-            @bloques = Array.new
+            @entradas = Array.new
         end
 
         def regla(nombre, &proc)
-            regla = @reglas.find{|x| x.nombre == nombre}
+            regla = @entradas.find{|x| x.nombre == nombre}
             if(regla == nil)
                 regla = Regla.new(nombre)
             else
@@ -24,7 +23,7 @@ module SistemaLDE
             end
             regla.instance_eval(&proc) if block_given?
             regla.comprobar
-            @reglas.push(regla)
+            @entradas.push(regla)
         end
 
         def bloque(&proc)
@@ -32,17 +31,13 @@ module SistemaLDE
             bloque.instance_eval(&proc) if block_given?
             #comprobar que bloque tiene al menos 1 regla o 2 bloques
             bloque.comprobar
-            @bloques.push(bloque)
+            @entradas.push(bloque)
         end
 
         def debug
-            if @reglas.length > 0
-                puts "Reglas:"
-                @reglas.each{|x| x.debug}
-            end
-            if @bloques.length > 0
-                puts "Bloques:"
-                @bloques.each{|x| x.debug}
+            puts "Sistema:"
+            if @entradas.length > 0
+                @entradas.each{|x| x.debug}
             end
         end
     end
@@ -77,7 +72,7 @@ module SistemaLDE
         end
 
         def debug
-            puts "\tNombre: #{@nombre}"
+            puts "*Regla #{@nombre}:"
             @patron_ent.debug
             @patron_sal.debug
             puts
@@ -186,17 +181,19 @@ module SistemaLDE
 
     class Bloque
         def initialize
-            @reglas = Array.new
-            @bloques = Array.new
+            @entradas = Array.new
+            @reglas = 0
+            @bloques = 0
         end
 
         def regla(nombre, &proc)
-            regla = @reglas.find{|x| x.nombre == nombre}
+            regla = @entradas.find{|x| x.nombre == nombre}
             if(regla == nil)
                 regla = Regla.new(nombre)
             end
             regla.instance_eval(&proc) if block_given?
-            @reglas.push(regla)
+            @entradas.push(regla)
+            @reglas += 1
         end
 
         def bloque(&proc)
@@ -204,24 +201,20 @@ module SistemaLDE
             bloque.instance_eval(&proc) if block_given?
             #comprobar que bloque tiene al menos 1 regla o 2 bloques
             bloque.comprobar
-            @bloques.push(bloque)
+            @entradas.push(bloque)
+            @bloques += 1
         end
 
         def comprobar
-            if @reglas.length == 0 && @bloques.length <= 1
+            if @reglas == 0 && @bloques <= 1
                 raise ExcepcionLDE.new, "Cada bloque debe contener al menos una regla o dos bloques."
             end
         end
 
         def debug
             puts "*Bloque:"
-            if @reglas.length > 0
-                puts "Reglas:"
-                @reglas.each{|x| x.debug}
-            end
-            if @bloques.length > 0
-                puts "Bloques:"
-                @bloques.each{|x| x.debug}
+            if @entradas.length > 0
+                @entradas.each{|x| x.debug}
             end
         end
     end
