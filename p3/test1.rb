@@ -1,4 +1,6 @@
-#ejemplo lde
+#@file test1.rb
+#@author Miguel García Moya
+
 require_relative("conferencia")
 
 class Test1 < ConferenciaLDE

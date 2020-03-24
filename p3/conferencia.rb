@@ -1,4 +1,8 @@
+#@file conferencia.rb
+#@author Miguel García Moya
+
 require("date")
+
 class Conferencia
     def initialize(nombre, fechaIni, fechaFin, lugar)
         #fechaFin >= fechaIni
