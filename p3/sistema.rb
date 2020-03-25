@@ -87,8 +87,11 @@ module SistemaLDE
                 @patron_sal.realizar_asignacion(ocurrencia)
                 #añade la ocurrencia transformada al conjunto
                 ocurrencia.each{|o| objetos.push(o)}
+                #regla ejecutada: informar bloque
+                return 1
             end
-
+            #regla no ejecutada: informar bloque
+            return 0
         end
 
         def debug
@@ -272,8 +275,13 @@ module SistemaLDE
         end
         
         def aplicar(objetos)
-            #aplicar sistema al conjunto de objetos
-            @entradas.each{|regla| regla.aplicar(objetos)}
+            ejecutadas = 1
+            #si no se ejecuta ninguna regla, dejar de ejecutar bloque
+            while ejecutadas > 0
+                ejecutadas = 0
+                #aplicar sistema al conjunto de objetos
+                @entradas.each{|regla| ejecutadas += regla.aplicar(objetos)}
+            end
         end
 
         def debug
