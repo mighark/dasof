@@ -7,7 +7,7 @@ test = SistemaLDE.sistema {
     regla :inicializar do
         patron_entrada 
         patron_salida do
-            variable "p", "Persona" do |p| p.hambre=5, p.dinero=10 end
+            variable "p", :Persona do |p| p.hambre=5, p.dinero=10 end
         end
     end
 
@@ -32,6 +32,38 @@ test = SistemaLDE.sistema {
 }
 
 test.debug
+
+class Persona
+    def initialize
+        @hambre = 1
+        @dinero = 1
+    end
+
+    attr_accessor :hambre, :dinero
+
+    def to_s
+        return "Hambre: #{@hambre}. Dinero: #{@dinero}."
+    end
+end
+
+class Comida
+    def initialize
+        @cantidad = 1
+    end
+
+    attr_accessor :cantidad
+
+    def to_s
+        return "Cantidad: #{@cantidad}."
+    end
+end
+
+puts
+puts "Comprobar transformación:"
+
+objetos = [Comida.new]
+test.aplicar(objetos)
+puts objetos
 
 puts
 puts "Comprobar situaciones de error:"

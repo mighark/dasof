@@ -34,6 +34,11 @@ module SistemaLDE
             @entradas.push(bloque)
         end
 
+        def aplicar(objetos)
+            #aplicar sistema al conjunto de objetos
+            @entradas.each{|regla| regla.aplicar(objetos)}
+        end
+
         def debug
             puts "Sistema:"
             if @entradas.length > 0
@@ -69,6 +74,21 @@ module SistemaLDE
             end
             #comprobar que si hay variables en ambos patrones, tienen el mismo tipo
             @patron_ent.comprobar_var_repetidas(@patron_sal)
+        end
+
+        def aplicar(objetos)
+            #selecciona ocurrencia
+            ocurrencia = @patron_ent.comprobar_condicion(objetos)
+            #si ocurrencia es nil, no aplicar regla
+            if ocurrencia != nil
+                #elimina ocurrencia del conjunto
+                ocurrencia.each{|o| objetos.delete(o)}
+                #aplica transformaciones sobre la ocurrencia
+                @patron_sal.realizar_asignacion(ocurrencia)
+                #añade la ocurrencia transformada al conjunto
+                ocurrencia.each{|o| objetos.push(o)}
+            end
+
         end
 
         def debug
@@ -120,7 +140,22 @@ module SistemaLDE
             super
         end
 
-        #WIP: comprobar condiciones sobre variables
+        def comprobar_condicion(objetos)
+            objetos_aux = objetos.clone
+            objetos_condicion = Array.new
+            @variables.each{|v| 
+                #busca un objeto que sea del tipo de la variable y cumpla la condicion
+                objeto = objetos_aux.find{|x| x.is_a?(Object.const_get(v.tipo)) && v.ejecutar_code(x)}
+                if objeto == nil
+                    #una variable no existe: no aplicar regla
+                    return nil
+                end
+                #elimina objeto del conjunto restante y pone objeto en conjunto que cumple condicion
+                objetos_aux.delete(objeto)
+                objetos_condicion.push(objeto)
+            }
+            return objetos_condicion
+        end
 
         def debug
             puts "\tPatrón de entrada. Variables:"
@@ -136,7 +171,25 @@ module SistemaLDE
             super
         end
 
-        #WIP: realizar asignaciones sobre variables
+        def realizar_asignacion(objetos)
+            objetos_aux = objetos.clone
+            @variables.each{|v| 
+                #busca un objeto que sea del tipo de la variable
+                objeto = objetos_aux.find{|x| x.is_a?(Object.const_get(v.tipo))}
+                if objeto == nil
+                    #un objeto no existe: crear
+                    objeto = Object.const_get(v.tipo).new
+                    objetos.push(objeto)
+                else
+                    #aplica transformacion
+                    v.ejecutar_code(objeto)
+                    #elimina objeto del conjunto restante
+                    objetos_aux.delete(objeto)
+                end
+            }
+            #elimina objetos que esten en patron de entrada y no de salida
+            objetos_aux.each{|o| objetos.delete(o)}
+        end
 
         def debug
             puts "\tPatrón de salida. Variables:"
@@ -159,6 +212,13 @@ module SistemaLDE
 
         def code(proc)
             @codeblock = proc
+        end
+
+        def ejecutar_code(objeto)
+            if @codeblock
+                return @codeblock.call(objeto)
+            end
+            return true
         end
 
         def debug(patron)
@@ -210,6 +270,11 @@ module SistemaLDE
                 raise ExcepcionLDE.new, "Cada bloque debe contener al menos una regla o dos bloques."
             end
         end
+        
+        def aplicar(objetos)
+            #aplicar sistema al conjunto de objetos
+            @entradas.each{|regla| regla.aplicar(objetos)}
+        end
 
         def debug
             puts "*Bloque:"
@@ -221,10 +286,6 @@ module SistemaLDE
 
     class ExcepcionLDE < RuntimeError
 
-    end
-
-    def self.aplicar(objetos)
-        #aplicar sistema al conjunto de objetos
     end
 
 end
