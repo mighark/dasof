@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            id="dasof.tipoftheday.commands.category"
+            name="Tip of the Day">
+      </category>
+      <command
+            categoryId="dasof.tipoftheday.commands.category"
+            id="dasof.tipoftheday.commands.tips"
+            name="Tip of the Day">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="dasof.tipoftheday.handlers.TipOfTheDayHandler"
+            commandId="dasof.tipoftheday.commands.tips">
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="dasof.tipoftheday.commands.tips"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+6">
+      </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:org.eclipse.ui.main.menu?after=additions">
+         <menu
+               id="dasof.tipoftheday.menus.tipmenu"
+               label="Tips"
+               mnemonic="M">
+            <command
+                  commandId="dasof.tipoftheday.commands.tips"
+                  id="dasof.tipoftheday.menus.tips"
+                  mnemonic="S"
+                  tooltip="Tip of the Day">
+            </command>
+         </menu>
+      </menuContribution>
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar
+               id="dasof.tipoftheday.toolbars.tipToolbar">
+            <command
+                  commandId="dasof.tipoftheday.commands.tips"
+                  icon="icons/sample.png"
+                  id="dasof.tipoftheday.toolbars.tips"
+                  tooltip="Tip of the day">
+            </command>
+         </toolbar>
+      </menuContribution>
+   </extension>
+
+</plugin>
