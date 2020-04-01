@@ -12,10 +12,16 @@ import java.util.Random;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.osgi.framework.Bundle;
+
+import dasof.tipoftheday.interfaces.ITipSource;
+
 import org.eclipse.jface.dialogs.MessageDialog;
 
 public class TipOfTheDayHandler extends AbstractHandler {
@@ -45,6 +51,23 @@ public class TipOfTheDayHandler extends AbstractHandler {
 			is.close();
 		} catch(IOException e) {
 			e.printStackTrace();
+		}
+		
+		IExtensionRegistry registro = Platform.getExtensionRegistry();
+		IConfigurationElement[] extensiones = 
+				registro.getConfigurationElementsFor("dasof.tipoftheday.tipsource");
+		
+		for(IConfigurationElement e : extensiones) {
+			if(e.getName().equals("TipSource")) {
+				try{
+					ITipSource fuenteConsejos = (ITipSource) e.createExecutableExtension("class");
+					//String nombreFuente = (String) e.getAttribute("name");
+					for(String consejo : fuenteConsejos.getTips()) consejos.add(consejo);
+				}
+				catch(CoreException exception) {
+					exception.printStackTrace();
+				}
+			}
 		}
 		
 		Random rand = new Random();
