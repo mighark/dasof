@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cc:CentroComercial xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cc="cc">
+  <plantas>
+    <elementos xsi:type="cc:Aparcamiento" sur="p3" este="p2" identifier="p1">
+      <zonas/>
+    </elementos>
+    <elementos xsi:type="cc:Aparcamiento" sur="p4" este="asc2" oeste="p1" identifier="p2">
+      <zonas/>
+    </elementos>
+    <elementos xsi:type="cc:Aparcamiento" norte="p1" sur="p5" este="p4" identifier="p3">
+      <zonas/>
+    </elementos>
+    <elementos xsi:type="cc:Aparcamiento" norte="p2" sur="p6" este="e6" oeste="p3" identifier="p4">
+      <zonas/>
+    </elementos>
+    <elementos xsi:type="cc:Aparcamiento" norte="p3" este="p6" identifier="p5">
+      <zonas/>
+    </elementos>
+    <elementos xsi:type="cc:Aparcamiento" norte="p4" este="aseo2" oeste="p5" identifier="p6">
+      <zonas/>
+    </elementos>
+    <elementos xsi:type="cc:Ascensor" sur="e6" este="//@plantas.0/@salidas.0" oeste="p2" identifier="asc2" destino="asc1"/>
+    <elementos xsi:type="cc:EspacioAbierto" norte="asc2" sur="aseo2" oeste="p4" identifier="e6"/>
+    <elementos xsi:type="cc:Aseo" norte="e6" oeste="p6" identifier="aseo2" tipo="femenino"/>
+    <salidas oeste="asc2"/>
+  </plantas>
+  <plantas numero="1">
+    <elementos xsi:type="cc:Tienda" sur="e1" este="t2" identifier="t1" nombre="tienda A"/>
+    <elementos xsi:type="cc:Tienda" sur="e2" este="asc1" oeste="t1" identifier="t2" nombre="tienda A"/>
+    <elementos xsi:type="cc:Tienda" norte="e5" oeste="r1" identifier="t3" nombre="tienda B"/>
+    <elementos xsi:type="cc:Restaurante" norte="e4" este="t3" identifier="r1" nombre="restaurante C"/>
+    <elementos xsi:type="cc:Ascensor" sur="e3" este="//@plantas.1/@salidas.0" oeste="t2" identifier="asc1" destino="asc2"/>
+    <elementos xsi:type="cc:Aseo" norte="e3" oeste="e5" identifier="aseo1"/>
+    <elementos xsi:type="cc:EspacioAbierto" norte="t1" sur="e4" este="e2" oeste="//@plantas.1/@puertas.0" identifier="e1"/>
+    <elementos xsi:type="cc:EspacioAbierto" norte="t2" sur="e5" este="e3" oeste="e1" identifier="e2"/>
+    <elementos xsi:type="cc:EspacioAbierto" norte="asc1" sur="aseo1" oeste="e2" identifier="e3"/>
+    <elementos xsi:type="cc:EspacioAbierto" norte="e1" sur="r1" este="e5" oeste="//@plantas.1/@puertas.1" identifier="e4"/>
+    <elementos xsi:type="cc:EspacioAbierto" norte="e2" sur="t3" este="aseo1" oeste="e4" identifier="e5"/>
+    <puertas este="e1"/>
+    <puertas este="e4"/>
+    <salidas oeste="asc1"/>
+  </plantas>
+</cc:CentroComercial>

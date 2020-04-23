@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
-    name="centroscomerciales" nsURI="cc" nsPrefix="cc">
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="centroscomerciales" nsURI="cc" nsPrefix="cc">
   <eAnnotations source="http://www.eclipse.org/OCL/Import">
     <details key="ecore" value="http://www.eclipse.org/emf/2002/Ecore"/>
   </eAnnotations>
@@ -11,68 +11,83 @@
   </eAnnotations>
   <eClassifiers xsi:type="ecore:EClass" name="CentroComercial">
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
-      <details key="constraints" value="plantas aforoCentro aseos tienda aparcamientos puertas salidas"/>
+      <details key="constraints" value="IAforoCentro IAseosIguales IPlantasNumeros IHayTienda IAparcamientosPlanta IHayPuerta IEscalerasPorPlanta"/>
     </eAnnotations>
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
-      <eAnnotations source="http://www.eclipse.org/emf/2002/GenModel">
-        <details key="documentation" value="TODO: comprobar que cada planta tiene una salida"/>
-      </eAnnotations>
-      <details key="plantas" value="elementos->forAll(e| e.planta >= 0 and e.planta &lt; self.plantas) and puertas->forAll(e| e.planta >= 0 and e.planta &lt; self.plantas)  and salidas->forAll(e| e.planta >= 0 and e.planta &lt; self.plantas)"/>
-      <details key="aforoCentro" value="aforo &lt;= elementos->select(e| e.oclIsKindOf(ElementoAforo))->collect(aforo)->sum()"/>
-      <details key="aseos" value="elementos->select(e| e.oclIsKindOf(Aseo))->select(e:Aseo| e.tipo = TipoAseo::masculino)->size() = elementos->select(e| e.oclIsKindOf(Aseo))->select(e:Aseo| e.tipo = TipoAseo::femenino)->size()"/>
-      <details key="tienda" value="elementos->select(e| e.oclIsKindOf(Tienda))->size() > 0"/>
-      <details key="aparcamientos" value="elementos->select(e| e.oclIsKindOf(Aparcamiento))->forAll(planta = 0)"/>
-      <details key="puertas" value="puertas->size() > 0"/>
-      <details key="salidas" value="salidas->size() > 0"/>
+      <details key="IAforoCentro" value="aforo &lt;= plantas->collect(elementos->select(e| e.oclIsKindOf(ElementoAforo))->collect(e | e.oclAsType(ElementoAforo).aforo)->sum())->sum()"/>
+      <details key="IAseosIguales" value="plantas->collect(elementos->select(e| e.oclIsKindOf(Aseo))->select(e| e.oclAsType(Aseo).tipo = TipoAseo::masculino)->size())->sum()&#xA;&#x9;&#x9;= plantas->collect(elementos->select(e| e.oclIsKindOf(Aseo))->select(e| e.oclAsType(Aseo).tipo = TipoAseo::femenino)->size())->sum()"/>
+      <details key="IPlantasNumeros" value="plantas->isUnique(numero) and plantas->forAll((numero >= 0) and numero &lt; plantas->size())"/>
+      <details key="IHayTienda" value="plantas->exists(elementos->select(e| e.oclIsKindOf(Tienda))->notEmpty())"/>
+      <details key="IAparcamientosPlanta" value="plantas->select(elementos->exists(e| e.oclIsKindOf(Aparcamiento)))->forAll(numero = 0) or plantas->select(elementos->exists(e| e.oclIsKindOf(Aparcamiento)))->forAll(numero = plantas->size() - 1)"/>
+      <details key="IHayPuerta" value="plantas->exists(v| v.puertas->notEmpty())"/>
+      <details key="IEscalerasPorPlanta" value="(plantas->size() = 1) or (plantas->forAll(p | p.elementos->exists(oclIsKindOf(ElementoCambioPlanta))))"/>
     </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="elementos" lowerBound="1" upperBound="-1" eType="#//Elemento" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="puertas" lowerBound="1" upperBound="-1" eType="#//Puerta" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="salidas" lowerBound="1" upperBound="-1" eType="#//Salida" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="aforo" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="plantas" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="plantas" lowerBound="1"
+        upperBound="-1" eType="#//Planta" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Planta">
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
+      <details key="constraints" value="IHayEspacioAbierto IAparcamientosOTiendas"/>
+    </eAnnotations>
+    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
+      <details key="IHayEspacioAbierto" value="elementos->exists(oclIsKindOf(EspacioAbierto))"/>
+      <details key="IAparcamientosOTiendas" value="not(elementos->exists(oclIsKindOf(ElementoAforo)) and elementos->exists(oclIsKindOf(Aparcamiento)))"/>
+    </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="numero" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="elementos" lowerBound="1"
+        upperBound="-1" eType="#//Elemento" containment="true" eOpposite="#//Elemento/planta"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="puertas" upperBound="-1"
+        eType="#//Puerta" containment="true" eOpposite="#//Puerta/planta"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="salidas" lowerBound="1"
+        upperBound="-1" eType="#//Salida" containment="true" eOpposite="#//Salida/planta"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Objeto" abstract="true">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="planta" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="norte" eType="#//Objeto"
+        eOpposite="#//Objeto/sur"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sur" eType="#//Objeto"
+        eOpposite="#//Objeto/norte"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="este" eType="#//Objeto"
+        eOpposite="#//Objeto/oeste"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="oeste" eType="#//Objeto"
+        eOpposite="#//Objeto/este"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Elemento" abstract="true" eSuperTypes="#//Objeto">
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
-      <details key="constraints" value="direcciones"/>
-    </eAnnotations>
-    <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
-      <details key="direcciones" value="adyancentes->isUnique(direccion)"/>
-    </eAnnotations>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="identifier" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
-        iD="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="adyancentes" lowerBound="1" upperBound="4" eType="#//Adyancentes"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="identifier" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" iD="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="planta" lowerBound="1"
+        eType="#//Planta" eOpposite="#//Planta/elementos"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ElementoAforo" abstract="true" eSuperTypes="#//Elemento">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="nombre" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="nombre" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="aforo" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Tienda" eSuperTypes="#//ElementoAforo"/>
   <eClassifiers xsi:type="ecore:EClass" name="Restaurante" eSuperTypes="#//ElementoAforo"/>
-  <eClassifiers xsi:type="ecore:EClass" name="ElementoCambioPlanta" abstract="true" eSuperTypes="#//Elemento">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="destino" lowerBound="1" eType="#//Elemento"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Escalera" eSuperTypes="#//ElementoCambioPlanta">
+  <eClassifiers xsi:type="ecore:EClass" name="ElementoCambioPlanta" abstract="true"
+      eSuperTypes="#//Elemento">
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
       <details key="constraints" value="escaleras"/>
     </eAnnotations>
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
-      <details key="escaleras" value="(planta = destino.planta + 1) or (planta = destino.planta - 1)"/>
+      <details key="escaleras" value="destino->forAll(d | (self.planta.numero = d.planta.numero + 1) or (self.planta.numero = d.planta.numero - 1))"/>
     </eAnnotations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="destino" ordered="false"
+        lowerBound="1" upperBound="-1" eType="#//Elemento"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Escalera" eSuperTypes="#//ElementoCambioPlanta"/>
   <eClassifiers xsi:type="ecore:EClass" name="Ascensor" eSuperTypes="#//ElementoCambioPlanta">
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore">
-      <details key="constraints" value="ascensores escaleras"/>
+      <details key="constraints" value="Iascensores"/>
     </eAnnotations>
     <eAnnotations source="http://www.eclipse.org/emf/2002/Ecore/OCL/Pivot">
-      <details key="ascensores" value="destino.oclIsKindOf(Ascensor)"/>
-      <details key="escaleras" value="(planta = destino.planta + 1) or (planta = destino.planta - 1)"/>
+      <details key="Iascensores" value="destino->forAll(oclIsKindOf(Ascensor))"/>
     </eAnnotations>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Aseo" eSuperTypes="#//Elemento">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="tipo" eType="#//TipoAseo"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="tipo" lowerBound="1" eType="#//TipoAseo"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="TipoAseo">
     <eLiterals name="masculino" value="-1"/>
@@ -81,23 +96,29 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="EspacioAbierto" eSuperTypes="#//Elemento"/>
   <eClassifiers xsi:type="ecore:EClass" name="Aparcamiento" eSuperTypes="#//Elemento">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="zonas" lowerBound="1" upperBound="9" eType="#//ZonaAparcamiento" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="zonas" lowerBound="1" upperBound="-1"
+        eType="#//ZonaAparcamiento" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ZonaAparcamiento">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="plazas"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="precio"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="usoReservado" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Adyancentes">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="direccion" eType="#//Direccion"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="elemento" lowerBound="1" eType="#//Objeto"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="plazas" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="precio" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EFloat"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="usoReservado" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="Direccion">
     <eLiterals name="norte"/>
-    <eLiterals name="sur"/>
-    <eLiterals name="este"/>
-    <eLiterals name="oeste"/>
+    <eLiterals name="sur" value="1"/>
+    <eLiterals name="este" value="2"/>
+    <eLiterals name="oeste" value="3"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Puerta" eSuperTypes="#//Objeto"/>
-  <eClassifiers xsi:type="ecore:EClass" name="Salida" eSuperTypes="#//Objeto"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Puerta" eSuperTypes="#//Objeto">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="planta" lowerBound="1"
+        eType="#//Planta" eOpposite="#//Planta/puertas"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Salida" eSuperTypes="#//Objeto">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="planta" lowerBound="1"
+        eType="#//Planta" eOpposite="#//Planta/salidas"/>
+  </eClassifiers>
 </ecore:EPackage>

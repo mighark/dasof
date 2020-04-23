@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.ui.newWizards">
+      <!-- @generated centroscomerciales -->
+      <category
+            id="org.eclipse.emf.ecore.Wizard.category.ID"
+            name="%_UI_Wizard_category"/>
+      <wizard
+            id="centroscomerciales.presentation.CentroscomercialesModelWizardID"
+            name="%_UI_CentroscomercialesModelWizard_label"
+            class="centroscomerciales.presentation.CentroscomercialesModelWizard"
+            category="org.eclipse.emf.ecore.Wizard.category.ID"
+            icon="icons/full/obj16/CentroscomercialesModelFile.gif">
+         <description>%_UI_CentroscomercialesModelWizard_description</description>
+         <selection class="org.eclipse.core.resources.IResource"/>
+      </wizard>
+   </extension>
+
+   <extension point="org.eclipse.ui.editors">
+      <!-- @generated centroscomerciales -->
+      <editor
+            id="centroscomerciales.presentation.CentroscomercialesEditorID"
+            name="%_UI_CentroscomercialesEditor_label"
+            icon="icons/full/obj16/CentroscomercialesModelFile.gif"
+            extensions="centroscomerciales"
+            class="centroscomerciales.presentation.CentroscomercialesEditor"
+            contributorClass="centroscomerciales.presentation.CentroscomercialesActionBarContributor">
+      </editor>
+   </extension>
+
+</plugin>
