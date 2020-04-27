@@ -4,9 +4,14 @@ package centroscomerciales.impl;
 
 import centroscomerciales.Aparcamiento;
 import centroscomerciales.CentroscomercialesPackage;
+import centroscomerciales.Elemento;
+import centroscomerciales.EspacioAbierto;
+import centroscomerciales.Objeto;
 import centroscomerciales.ZonaAparcamiento;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.emf.common.notify.NotificationChain;
 
@@ -145,6 +150,29 @@ public class AparcamientoImpl extends ElementoImpl implements Aparcamiento {
 				return zonas != null && !zonas.isEmpty();
 		}
 		return super.eIsSet(featureID);
+	}
+
+	@Override
+	public List<Elemento> accesibles() {
+		List<Elemento> accesibles = new ArrayList<>();
+		if(checkAccesible(getNorte())) {
+			accesibles.add((Elemento) getNorte()) ;
+		}
+		if(checkAccesible(getSur())) {
+			accesibles.add((Elemento) getSur()) ;
+		}
+		if(checkAccesible(getEste())) {
+			accesibles.add((Elemento) getEste()) ;
+		}
+		if(checkAccesible(getOeste())) {
+			accesibles.add((Elemento) getOeste()) ;
+		}
+		return accesibles;
+	}
+	
+	private boolean checkAccesible(Objeto o) {
+		return o != null && (o instanceof Aparcamiento ||
+				o instanceof EspacioAbierto);
 	}
 
 } //AparcamientoImpl

@@ -2,6 +2,8 @@
  */
 package centroscomerciales;
 
+import java.util.List;
+
 import org.eclipse.emf.ecore.EObject;
 
 /**
@@ -136,5 +138,7 @@ public interface Objeto extends EObject {
 	 * @generated
 	 */
 	void setOeste(Objeto value);
+	
+	List<Elemento> accesibles();
 
 } // Objeto

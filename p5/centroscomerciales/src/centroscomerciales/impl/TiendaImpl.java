@@ -3,7 +3,13 @@
 package centroscomerciales.impl;
 
 import centroscomerciales.CentroscomercialesPackage;
+import centroscomerciales.Elemento;
+import centroscomerciales.EspacioAbierto;
+import centroscomerciales.Objeto;
 import centroscomerciales.Tienda;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.emf.ecore.EClass;
 
@@ -32,6 +38,29 @@ public class TiendaImpl extends ElementoAforoImpl implements Tienda {
 	@Override
 	protected EClass eStaticClass() {
 		return CentroscomercialesPackage.Literals.TIENDA;
+	}
+	
+	@Override
+	public List<Elemento> accesibles() {
+		List<Elemento> accesibles = new ArrayList<>();
+		if(checkAccesible(getNorte())) {
+			accesibles.add((Elemento) getNorte()) ;
+		}
+		if(checkAccesible(getSur())) {
+			accesibles.add((Elemento) getSur()) ;
+		}
+		if(checkAccesible(getEste())) {
+			accesibles.add((Elemento) getEste()) ;
+		}
+		if(checkAccesible(getOeste())) {
+			accesibles.add((Elemento) getOeste()) ;
+		}
+		return accesibles;
+	}
+	
+	private boolean checkAccesible(Objeto o) {
+		return o != null && (o instanceof Tienda ||
+				o instanceof EspacioAbierto);
 	}
 
 } //TiendaImpl
