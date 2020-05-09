@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="wizard" nsURI="wiz" nsPrefix="wiz">
+  <eClassifiers xsi:type="ecore:EClass" name="Wizard">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="titulo" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="paginas" lowerBound="1"
+        upperBound="-1" eType="#//Pagina" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="pagIni" lowerBound="1"
+        eType="#//Pagina"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Pagina">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="camposTexto" upperBound="-1"
+        eType="#//CampoTexto" containment="true" eOpposite="#//CampoTexto/pagina"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="casillasVerif" upperBound="-1"
+        eType="#//CasillaVerif" containment="true" eOpposite="#//CasillaVerif/pagina"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="botones" lowerBound="1"
+        upperBound="-1" eType="#//Boton" containment="true" eOpposite="#//Boton/pagina"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        iD="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Campo">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="tag" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="CampoTexto" eSuperTypes="#//Campo">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="opcional" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="pagina" lowerBound="1"
+        eType="#//Pagina" eOpposite="#//Pagina/camposTexto"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="CasillaVerif" eSuperTypes="#//Campo">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="porDef" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="pagina" lowerBound="1"
+        eType="#//Pagina" eOpposite="#//Pagina/casillasVerif"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        iD="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Boton" abstract="true" eSuperTypes="#//Campo">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="pagina" lowerBound="1"
+        eType="#//Pagina" eOpposite="#//Pagina/botones"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="BotonNavegar" eSuperTypes="#//Boton">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="destino" lowerBound="1"
+        upperBound="-1" eType="#//Destino" containment="true" eOpposite="#//Destino/boton"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="BotonMensaje" eSuperTypes="#//Boton">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="mensaje" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="BotonCerrar" eSuperTypes="#//Boton"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Destino">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="casilla" eType="#//CasillaVerif"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="destino" lowerBound="1"
+        eType="#//Pagina"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="boton" lowerBound="1" eType="#//BotonNavegar"
+        eOpposite="#//BotonNavegar/destino"/>
+  </eClassifiers>
+</ecore:EPackage>

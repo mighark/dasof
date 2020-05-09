@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/wizard/src" modelPluginID="wizard" modelName="Wizard"
+    rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container" importerID="org.eclipse.emf.importer.ecore"
+    complianceLevel="8.0" copyrightFields="false" operationReflection="true" importOrganizing="true">
+  <foreignModel>wizard.ecore</foreignModel>
+  <genPackages prefix="Wizard" disposableProviderFactory="true" ecorePackage="wizard.ecore#/">
+    <genClasses ecoreClass="wizard.ecore#//Wizard">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute wizard.ecore#//Wizard/titulo"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference wizard.ecore#//Wizard/paginas"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference wizard.ecore#//Wizard/pagIni"/>
+    </genClasses>
+    <genClasses ecoreClass="wizard.ecore#//Pagina">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference wizard.ecore#//Pagina/camposTexto"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference wizard.ecore#//Pagina/casillasVerif"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference wizard.ecore#//Pagina/botones"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute wizard.ecore#//Pagina/name"/>
+    </genClasses>
+    <genClasses ecoreClass="wizard.ecore#//Campo">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute wizard.ecore#//Campo/tag"/>
+    </genClasses>
+    <genClasses ecoreClass="wizard.ecore#//CampoTexto">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute wizard.ecore#//CampoTexto/opcional"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference wizard.ecore#//CampoTexto/pagina"/>
+    </genClasses>
+    <genClasses ecoreClass="wizard.ecore#//CasillaVerif">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute wizard.ecore#//CasillaVerif/porDef"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference wizard.ecore#//CasillaVerif/pagina"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute wizard.ecore#//CasillaVerif/name"/>
+    </genClasses>
+    <genClasses ecoreClass="wizard.ecore#//Boton">
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference wizard.ecore#//Boton/pagina"/>
+    </genClasses>
+    <genClasses ecoreClass="wizard.ecore#//BotonNavegar">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference wizard.ecore#//BotonNavegar/destino"/>
+    </genClasses>
+    <genClasses ecoreClass="wizard.ecore#//BotonMensaje">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute wizard.ecore#//BotonMensaje/mensaje"/>
+    </genClasses>
+    <genClasses ecoreClass="wizard.ecore#//BotonCerrar"/>
+    <genClasses ecoreClass="wizard.ecore#//Destino">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference wizard.ecore#//Destino/casilla"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference wizard.ecore#//Destino/destino"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference wizard.ecore#//Destino/boton"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>
