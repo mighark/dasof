@@ -3,14 +3,59 @@
  */
 package wizard.scoping;
 
+import com.google.common.base.Objects;
+import java.util.ArrayList;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
+import org.eclipse.xtext.EcoreUtil2;
+import org.eclipse.xtext.scoping.IScope;
+import org.eclipse.xtext.scoping.Scopes;
+import wizard.CasillaVerif;
+import wizard.Destino;
+import wizard.Pagina;
+import wizard.Wizard;
+import wizard.WizardPackage;
 import wizard.scoping.AbstractWizardScopeProvider;
 
 /**
  * This class contains custom scoping description.
  * 
- * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#scoping
+ * See https:www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#scoping
  * on how and when to use it.
  */
 @SuppressWarnings("all")
 public class WizardScopeProvider extends AbstractWizardScopeProvider {
+  @Override
+  public IScope getScope(final EObject context, final EReference reference) {
+    if ((context instanceof Destino)) {
+      EObject _rootContainer = EcoreUtil2.getRootContainer(context);
+      Wizard wizard = ((Wizard) _rootContainer);
+      Pagina paginaBoton = ((Destino) context).getBoton().getPagina();
+      ArrayList<EObject> result = new ArrayList<EObject>();
+      boolean _equals = Objects.equal(reference, WizardPackage.Literals.DESTINO__DESTINO);
+      if (_equals) {
+        EList<Pagina> _paginas = wizard.getPaginas();
+        for (final Pagina page : _paginas) {
+          boolean _notEquals = (!Objects.equal(page, paginaBoton));
+          if (_notEquals) {
+            result.add(page);
+          }
+        }
+      } else {
+        boolean _equals_1 = Objects.equal(reference, WizardPackage.Literals.DESTINO__CASILLA);
+        if (_equals_1) {
+          EList<CasillaVerif> _casillasVerif = paginaBoton.getCasillasVerif();
+          for (final CasillaVerif casilla : _casillasVerif) {
+            result.add(casilla);
+          }
+        } else {
+          return super.getScope(context, reference);
+        }
+      }
+      return Scopes.scopeFor(result);
+    } else {
+      return super.getScope(context, reference);
+    }
+  }
 }

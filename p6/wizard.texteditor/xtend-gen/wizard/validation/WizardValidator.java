@@ -3,6 +3,18 @@
  */
 package wizard.validation;
 
+import com.google.common.base.Objects;
+import java.util.function.Consumer;
+import org.eclipse.xtext.validation.Check;
+import org.eclipse.xtext.xbase.lib.IterableExtensions;
+import org.eclipse.xtext.xbase.lib.Procedures.Procedure2;
+import wizard.Boton;
+import wizard.BotonNavegar;
+import wizard.CampoTexto;
+import wizard.CasillaVerif;
+import wizard.Destino;
+import wizard.Pagina;
+import wizard.WizardPackage;
 import wizard.validation.AbstractWizardValidator;
 
 /**
@@ -12,4 +24,152 @@ import wizard.validation.AbstractWizardValidator;
  */
 @SuppressWarnings("all")
 public class WizardValidator extends AbstractWizardValidator {
+  @Check
+  public void checkLongitudEtiquetaCampoTexto(final CampoTexto campo) {
+    int _length = campo.getTag().length();
+    boolean _greaterThan = (_length > 20);
+    if (_greaterThan) {
+      this.error("La etiqueta de un campo de texto no puede superar los 20 caracteres", 
+        WizardPackage.Literals.CAMPO__TAG, "campoTextoTagDemasiadoLarga");
+    }
+  }
+  
+  @Check
+  public void checkLongitudEtiquetaCasillaVerif(final CasillaVerif casilla) {
+    int _length = casilla.getTag().length();
+    boolean _greaterThan = (_length > 20);
+    if (_greaterThan) {
+      this.error("La etiqueta de una casilla de verificación no puede superar los 20 caracteres", 
+        WizardPackage.Literals.CAMPO__TAG, "casillaVerifTagDemasiadoLarga");
+    }
+  }
+  
+  @Check
+  public void checkLongitudEtiquetaBoton(final Boton boton) {
+    int _length = boton.getTag().length();
+    boolean _greaterThan = (_length > 10);
+    if (_greaterThan) {
+      this.error("La etiqueta de un botón no puede superar los 10 caracteres", 
+        WizardPackage.Literals.CAMPO__TAG, "botonTagDemasiadoLarga");
+    }
+  }
+  
+  @Check
+  public void checkEtiquetasPagina(final Pagina pagina) {
+    final Procedure2<CampoTexto, Integer> _function = (CampoTexto elem, Integer index) -> {
+      this.checkEtiquetaUnica(pagina, elem, index);
+    };
+    IterableExtensions.<CampoTexto>forEach(pagina.getCamposTexto(), _function);
+    final Procedure2<CasillaVerif, Integer> _function_1 = (CasillaVerif elem, Integer index) -> {
+      this.checkEtiquetaUnica(pagina, elem, index);
+    };
+    IterableExtensions.<CasillaVerif>forEach(pagina.getCasillasVerif(), _function_1);
+    final Procedure2<Boton, Integer> _function_2 = (Boton elem, Integer index) -> {
+      this.checkEtiquetaUnica(pagina, elem, index);
+    };
+    IterableExtensions.<Boton>forEach(pagina.getBotones(), _function_2);
+  }
+  
+  public void checkEtiquetaUnica(final Pagina pagina, final CampoTexto campo, final Integer index) {
+    final Consumer<CampoTexto> _function = (CampoTexto elem) -> {
+      boolean _equals = elem.getTag().equals(campo.getTag());
+      if (_equals) {
+        this.error("Una página no puede tener dos elementos distintos con la misma etiqueta", 
+          WizardPackage.Literals.PAGINA__CAMPOS_TEXTO, "paginaEtiquetaNoUnica");
+      }
+    };
+    pagina.getCamposTexto().subList(((index).intValue() + 1), pagina.getCamposTexto().size()).forEach(_function);
+    final Consumer<CasillaVerif> _function_1 = (CasillaVerif elem) -> {
+      boolean _equals = elem.getTag().equals(campo.getTag());
+      if (_equals) {
+        this.error("Una página no puede tener dos elementos distintos con la misma etiqueta", 
+          WizardPackage.Literals.PAGINA__CAMPOS_TEXTO, "paginaEtiquetaNoUnica");
+      }
+    };
+    pagina.getCasillasVerif().forEach(_function_1);
+    final Consumer<Boton> _function_2 = (Boton elem) -> {
+      boolean _equals = elem.getTag().equals(campo.getTag());
+      if (_equals) {
+        this.error("Una página no puede tener dos elementos distintos con la misma etiqueta", 
+          WizardPackage.Literals.PAGINA__CAMPOS_TEXTO, "paginaEtiquetaNoUnica");
+      }
+    };
+    pagina.getBotones().forEach(_function_2);
+  }
+  
+  public void checkEtiquetaUnica(final Pagina pagina, final CasillaVerif casilla, final Integer index) {
+    final Consumer<CasillaVerif> _function = (CasillaVerif elem) -> {
+      boolean _equals = elem.getTag().equals(casilla.getTag());
+      if (_equals) {
+        this.error("Una página no puede tener dos elementos distintos con la misma etiqueta", 
+          WizardPackage.Literals.PAGINA__CASILLAS_VERIF, "paginaEtiquetaNoUnica");
+      }
+    };
+    pagina.getCasillasVerif().subList(((index).intValue() + 1), pagina.getCasillasVerif().size()).forEach(_function);
+    final Consumer<Boton> _function_1 = (Boton elem) -> {
+      boolean _equals = elem.getTag().equals(casilla.getTag());
+      if (_equals) {
+        this.error("Una página no puede tener dos elementos distintos con la misma etiqueta", 
+          WizardPackage.Literals.PAGINA__CASILLAS_VERIF, "paginaEtiquetaNoUnica");
+      }
+    };
+    pagina.getBotones().forEach(_function_1);
+  }
+  
+  public void checkEtiquetaUnica(final Pagina pagina, final Boton boton, final Integer index) {
+    final Consumer<Boton> _function = (Boton elem) -> {
+      boolean _equals = elem.getTag().equals(boton.getTag());
+      if (_equals) {
+        this.error("Una página no puede tener dos elementos distintos con la misma etiqueta", 
+          WizardPackage.Literals.PAGINA__BOTONES, "paginaEtiquetaNoUnica");
+      }
+    };
+    pagina.getBotones().subList(((index).intValue() + 1), pagina.getBotones().size()).forEach(_function);
+  }
+  
+  @Check
+  public void checkPaginaBotonesNoSoloMensajes(final Pagina pagina) {
+    throw new Error("Unresolved compilation problems:"
+      + "\nCannot refer to the non-final variable result inside a lambda expression"
+      + "\nCannot refer to the non-final variable result inside a lambda expression");
+  }
+  
+  @Check
+  public void checkPaginaBotonesDestino(final Pagina pagina) {
+    final Consumer<Boton> _function = (Boton elem) -> {
+      if ((elem instanceof BotonNavegar)) {
+        final Consumer<Destino> _function_1 = (Destino elem2) -> {
+          Pagina _destino = elem2.getDestino();
+          boolean _equals = Objects.equal(_destino, pagina);
+          if (_equals) {
+            this.error("Un botón de navegar no puede tener como destino a la misma página", 
+              WizardPackage.Literals.PAGINA__BOTONES, "paginaBotonesDestinoInutil");
+          }
+        };
+        ((BotonNavegar) elem).getDestino().forEach(_function_1);
+      }
+    };
+    pagina.getBotones().forEach(_function);
+  }
+  
+  @Check
+  public void checkBotonDestinosBienDef(final BotonNavegar boton) {
+    final Procedure2<Destino, Integer> _function = (Destino elem, Integer index) -> {
+      this.checkDestinoUnico(boton, elem, index);
+    };
+    IterableExtensions.<Destino>forEach(boton.getDestino(), _function);
+  }
+  
+  public void checkDestinoUnico(final BotonNavegar boton, final Destino destino, final Integer index) {
+    final Consumer<Destino> _function = (Destino elem) -> {
+      CasillaVerif _casilla = elem.getCasilla();
+      CasillaVerif _casilla_1 = destino.getCasilla();
+      boolean _equals = Objects.equal(_casilla, _casilla_1);
+      if (_equals) {
+        this.error("Un botón debe tener un único destino por defecto y por cada casilla", 
+          WizardPackage.Literals.BOTON_NAVEGAR__DESTINO, "botonDestinoNoUnico");
+      }
+    };
+    boton.getDestino().subList(((index).intValue() + 1), boton.getDestino().size()).forEach(_function);
+  }
 }
