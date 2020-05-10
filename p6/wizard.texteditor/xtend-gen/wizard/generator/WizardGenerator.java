@@ -3,10 +3,22 @@
  */
 package wizard.generator;
 
+import com.google.common.collect.Iterables;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.generator.AbstractGenerator;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
 import org.eclipse.xtext.generator.IGeneratorContext;
+import org.eclipse.xtext.xbase.lib.IteratorExtensions;
+import wizard.Boton;
+import wizard.BotonCerrar;
+import wizard.BotonNavegar;
+import wizard.CampoTexto;
+import wizard.CasillaVerif;
+import wizard.Pagina;
+import wizard.Wizard;
 
 /**
  * Generates code from your model files on save.
@@ -15,7 +27,616 @@ import org.eclipse.xtext.generator.IGeneratorContext;
  */
 @SuppressWarnings("all")
 public class WizardGenerator extends AbstractGenerator {
+  private CharSequence MAIN_FILE = "package main;\nimport wizard.Wizard;\npublic class Main {\n\tpublic static void main(String[] args) {\n\t\tWizard wizard = new Wizard();\n\t\twizard.showWizard();\n\t}\n}";
+  
+  private CharSequence CLOSE_WIZARD_FILE = "package listeners;\nimport java.awt.event.ActionEvent;\nimport java.awt.event.ActionListener;\nimport javax.swing.JFrame;\npublic class CloseWizardListener implements ActionListener {\n\tprivate JFrame window;\n\tpublic CloseWizardListener(JFrame window) {\n\t\tthis.window = window;\n\t}\n\t@Override\n\tpublic void actionPerformed(ActionEvent arg0) {\n\t\twindow.setVisible(false);\n\t\twindow.dispose();\n\t}\n}";
+  
   @Override
   public void doGenerate(final Resource resource, final IFileSystemAccess2 fsa, final IGeneratorContext context) {
+    Iterable<Wizard> _filter = Iterables.<Wizard>filter(IteratorExtensions.<EObject>toIterable(resource.getAllContents()), Wizard.class);
+    for (final Wizard wizard : _filter) {
+      {
+        fsa.generateFile("wizard/Wizard.java", this.compile(wizard));
+        fsa.generateFile("listeners/ChangePageListener.java", "WIP");
+      }
+    }
+    fsa.generateFile("src/main.java", this.MAIN_FILE);
+    fsa.generateFile("listeners/CloseWizardListener.java", this.CLOSE_WIZARD_FILE);
+  }
+  
+  public CharSequence compile(final Wizard wizard) {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("package wizard;");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("import java.awt.BorderLayout;");
+    _builder.newLine();
+    _builder.append("import java.awt.CardLayout;");
+    _builder.newLine();
+    _builder.append("import java.awt.GridBagConstraints;");
+    _builder.newLine();
+    _builder.append("import java.awt.GridBagLayout;");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("import javax.swing.JButton;");
+    _builder.newLine();
+    _builder.append("import javax.swing.JCheckBox;");
+    _builder.newLine();
+    _builder.append("import javax.swing.JFrame;");
+    _builder.newLine();
+    _builder.append("import javax.swing.JLabel;");
+    _builder.newLine();
+    _builder.append("import javax.swing.JPanel;");
+    _builder.newLine();
+    _builder.append("import javax.swing.JTextField;");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("import listeners.ChangePageListener;");
+    _builder.newLine();
+    _builder.append("import listeners.CloseWizardListener;");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("public class Wizard extends JFrame {");
+    _builder.newLine();
+    _builder.append("\t");
+    int i = 0;
+    _builder.newLineIfNotEmpty();
+    {
+      EList<Pagina> _paginas = wizard.getPaginas();
+      for(final Pagina pagina : _paginas) {
+        _builder.append("\t");
+        _builder.append("public static final String PAGE_");
+        _builder.append(i, "\t");
+        _builder.append(" = \"");
+        String _name = pagina.getName();
+        _builder.append(_name, "\t");
+        _builder.append("\"");
+        _builder.newLineIfNotEmpty();
+        _builder.append("\t");
+        _builder.append(i = (i + 1), "\t");
+        _builder.newLineIfNotEmpty();
+      }
+    }
+    _builder.append("\t");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("private JPanel wizard = new JPanel();");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("private CardLayout layout = new CardLayout();");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("private JTextField ");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append(i = 0, "\t");
+    _builder.newLineIfNotEmpty();
+    {
+      EList<Pagina> _paginas_1 = wizard.getPaginas();
+      for(final Pagina pagina_1 : _paginas_1) {
+        _builder.append("\t");
+        int j = 0;
+        _builder.newLineIfNotEmpty();
+        {
+          EList<CampoTexto> _camposTexto = pagina_1.getCamposTexto();
+          for(final CampoTexto texto : _camposTexto) {
+            _builder.append("\t");
+            _builder.append("text");
+            _builder.append(i, "\t");
+            _builder.append("_");
+            _builder.append(j, "\t");
+            _builder.append(", ");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t");
+            _builder.append(j = (j + 1), "\t");
+            _builder.newLineIfNotEmpty();
+          }
+        }
+        _builder.append("\t");
+        _builder.append(i = (i + 1), "\t");
+        _builder.newLineIfNotEmpty();
+      }
+    }
+    _builder.append("\t");
+    _builder.append(";");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("private JCheckBox ");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append(i = 0, "\t");
+    _builder.newLineIfNotEmpty();
+    {
+      EList<Pagina> _paginas_2 = wizard.getPaginas();
+      for(final Pagina pagina_2 : _paginas_2) {
+        _builder.append("\t");
+        int j_1 = 0;
+        _builder.newLineIfNotEmpty();
+        {
+          EList<CasillaVerif> _casillasVerif = pagina_2.getCasillasVerif();
+          for(final CasillaVerif casilla : _casillasVerif) {
+            _builder.append("\t");
+            _builder.append("check");
+            _builder.append(i, "\t");
+            _builder.append("_");
+            _builder.append(j_1, "\t");
+            _builder.append(", ");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t");
+            _builder.append(j_1 = (j_1 + 1), "\t");
+            _builder.newLineIfNotEmpty();
+          }
+        }
+        _builder.append("\t");
+        _builder.append(i = (i + 1), "\t");
+        _builder.newLineIfNotEmpty();
+      }
+    }
+    _builder.append("\t");
+    _builder.append(";");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append(i = 0, "\t");
+    _builder.newLineIfNotEmpty();
+    {
+      EList<Pagina> _paginas_3 = wizard.getPaginas();
+      for(final Pagina pagina_3 : _paginas_3) {
+        _builder.append("\t");
+        int j_2 = 0;
+        _builder.newLineIfNotEmpty();
+        {
+          EList<CasillaVerif> _casillasVerif_1 = pagina_3.getCasillasVerif();
+          for(final CasillaVerif casilla_1 : _casillasVerif_1) {
+            _builder.append("\t");
+            _builder.append("public boolean check");
+            _builder.append(i, "\t");
+            _builder.append("_");
+            _builder.append(j_2, "\t");
+            _builder.append("() { return check");
+            _builder.append(i, "\t");
+            _builder.append("_");
+            _builder.append(j_2, "\t");
+            _builder.append(".isSelected(); }");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t");
+            _builder.append("public void check");
+            _builder.append(i, "\t");
+            _builder.append("_");
+            _builder.append(j_2, "\t");
+            _builder.append("(boolean v) { check");
+            _builder.append(i, "\t");
+            _builder.append("_");
+            _builder.append(j_2, "\t");
+            _builder.append(".setSelected(v); }");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t");
+            _builder.append(j_2 = (j_2 + 1), "\t");
+            _builder.newLineIfNotEmpty();
+          }
+        }
+        _builder.append("\t");
+        _builder.append(i = (i + 1), "\t");
+        _builder.newLineIfNotEmpty();
+      }
+    }
+    _builder.append("\t");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append(i = 0, "\t");
+    _builder.newLineIfNotEmpty();
+    {
+      EList<Pagina> _paginas_4 = wizard.getPaginas();
+      for(final Pagina pagina_4 : _paginas_4) {
+        _builder.append("\t");
+        int j_3 = 0;
+        _builder.newLineIfNotEmpty();
+        {
+          EList<CampoTexto> _camposTexto_1 = pagina_4.getCamposTexto();
+          for(final CampoTexto texto_1 : _camposTexto_1) {
+            _builder.append("\t");
+            _builder.append("public String text");
+            _builder.append(i, "\t");
+            _builder.append("_");
+            _builder.append(j_3, "\t");
+            _builder.append("() { return text");
+            _builder.append(i, "\t");
+            _builder.append("_");
+            _builder.append(j_3, "\t");
+            _builder.append(".getText(); }");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t");
+            _builder.append("public void text");
+            _builder.append(i, "\t");
+            _builder.append("_");
+            _builder.append(j_3, "\t");
+            _builder.append("(String v) { text");
+            _builder.append(i, "\t");
+            _builder.append("_");
+            _builder.append(j_3, "\t");
+            _builder.append(".setText(v); }");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t");
+            _builder.append(j_3 = (j_3 + 1), "\t");
+            _builder.newLineIfNotEmpty();
+          }
+        }
+        _builder.append("\t");
+        _builder.append(i = (i + 1), "\t");
+        _builder.newLineIfNotEmpty();
+      }
+    }
+    _builder.append("\t");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("public Wizard () {");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("super (\"");
+    String _titulo = wizard.getTitulo();
+    _builder.append(_titulo, "\t\t");
+    _builder.append("\");");
+    _builder.newLineIfNotEmpty();
+    _builder.append("\t\t");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("JPanel page, fields, buttons;");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("GridBagConstraints c = new GridBagConstraints();\t\t");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("c.ipadx = 10;");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("c.anchor = GridBagConstraints.WEST;");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("// panel containing all pages");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("wizard = new JPanel(layout);");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append(i = 0, "\t\t");
+    _builder.newLineIfNotEmpty();
+    {
+      EList<Pagina> _paginas_5 = wizard.getPaginas();
+      for(final Pagina pagina_5 : _paginas_5) {
+        _builder.append("\t\t");
+        _builder.append("fields = new JPanel(new GridBagLayout());");
+        _builder.newLine();
+        _builder.append("\t\t");
+        int j_4 = 0;
+        _builder.newLineIfNotEmpty();
+        _builder.append("\t\t");
+        int k = 0;
+        _builder.newLineIfNotEmpty();
+        {
+          EList<CampoTexto> _camposTexto_2 = pagina_5.getCamposTexto();
+          for(final CampoTexto campo : _camposTexto_2) {
+            _builder.append("\t\t");
+            _builder.append("JLabel labelt");
+            _builder.append(i, "\t\t");
+            _builder.append("_");
+            _builder.append(j_4, "\t\t");
+            _builder.append(" = new JLabel(\"");
+            String _tag = campo.getTag();
+            _builder.append(_tag, "\t\t");
+            _builder.append("\");");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t\t");
+            _builder.append("c.gridx = 0;");
+            _builder.newLine();
+            _builder.append("\t\t");
+            _builder.append("c.gridy = ");
+            _builder.append(k, "\t\t");
+            _builder.append(";\t");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t\t");
+            _builder.append("fields.add(labelt");
+            _builder.append(i, "\t\t");
+            _builder.append("_");
+            _builder.append(j_4, "\t\t");
+            _builder.append(", c);");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t\t");
+            _builder.append("text");
+            _builder.append(i, "\t\t");
+            _builder.append("_");
+            _builder.append(j_4, "\t\t");
+            _builder.append("  = new JTextField(10);");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t\t");
+            _builder.append("c.gridx = 1;");
+            _builder.newLine();
+            _builder.append("\t\t");
+            _builder.append("c.gridy = ");
+            _builder.append(k, "\t\t");
+            _builder.append(";\t\t");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t\t");
+            _builder.append("fields.add(text");
+            _builder.append(i, "\t\t");
+            _builder.append("_");
+            _builder.append(j_4, "\t\t");
+            _builder.append(", c);");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t\t");
+            _builder.append(j_4 = (j_4 + 1), "\t\t");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t\t");
+            _builder.append(k = (k + 2), "\t\t");
+            _builder.newLineIfNotEmpty();
+          }
+        }
+        _builder.append("\t\t");
+        _builder.append(j_4 = 0, "\t\t");
+        _builder.newLineIfNotEmpty();
+        {
+          EList<CasillaVerif> _casillasVerif_2 = pagina_5.getCasillasVerif();
+          for(final CasillaVerif casilla_2 : _casillasVerif_2) {
+            _builder.append("\t\t");
+            _builder.append("JLabel labelc");
+            _builder.append(i, "\t\t");
+            _builder.append("_");
+            _builder.append(j_4, "\t\t");
+            _builder.append(" = new JLabel(\"");
+            String _tag_1 = casilla_2.getTag();
+            _builder.append(_tag_1, "\t\t");
+            _builder.append("\");");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t\t");
+            _builder.append("c.gridx = 0;");
+            _builder.newLine();
+            _builder.append("\t\t");
+            _builder.append("c.gridy = ");
+            _builder.append(k, "\t\t");
+            _builder.append(";\t");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t\t");
+            _builder.append("fields.add(labelc");
+            _builder.append(i, "\t\t");
+            _builder.append("_");
+            _builder.append(j_4, "\t\t");
+            _builder.append(", c);");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t\t");
+            _builder.append("check");
+            _builder.append(i, "\t\t");
+            _builder.append("_");
+            _builder.append(j_4, "\t\t");
+            _builder.append("  = new JCheckBox();");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t\t");
+            _builder.append("c.gridx = 1;");
+            _builder.newLine();
+            _builder.append("\t\t");
+            _builder.append("c.gridy = ");
+            _builder.append(k, "\t\t");
+            _builder.append(";\t\t");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t\t");
+            _builder.append("fields.add(check");
+            _builder.append(i, "\t\t");
+            _builder.append("_");
+            _builder.append(j_4, "\t\t");
+            _builder.append(", c);");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t\t");
+            _builder.append(j_4 = (j_4 + 1), "\t\t");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t\t");
+            _builder.append(k = (k + 1), "\t\t");
+            _builder.newLineIfNotEmpty();
+          }
+        }
+        _builder.append("\t\t");
+        _builder.append(j_4 = 0, "\t\t");
+        _builder.newLineIfNotEmpty();
+        {
+          EList<CasillaVerif> _casillasVerif_3 = pagina_5.getCasillasVerif();
+          for(final CasillaVerif casilla_3 : _casillasVerif_3) {
+            _builder.append("\t\t");
+            _builder.append("JLabel labelc");
+            _builder.append(i, "\t\t");
+            _builder.append("_");
+            _builder.append(j_4, "\t\t");
+            _builder.append(" = new JLabel(\"");
+            String _tag_2 = casilla_3.getTag();
+            _builder.append(_tag_2, "\t\t");
+            _builder.append("\");");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t\t");
+            _builder.append("c.gridx = 0;");
+            _builder.newLine();
+            _builder.append("\t\t");
+            _builder.append("c.gridy = ");
+            _builder.append(k, "\t\t");
+            _builder.append(";\t");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t\t");
+            _builder.append("fields.add(labelc");
+            _builder.append(i, "\t\t");
+            _builder.append("_");
+            _builder.append(j_4, "\t\t");
+            _builder.append(", c);");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t\t");
+            _builder.append("check");
+            _builder.append(i, "\t\t");
+            _builder.append("_");
+            _builder.append(j_4, "\t\t");
+            _builder.append("  = new JCheckBox();");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t\t");
+            _builder.append("c.gridx = 1;");
+            _builder.newLine();
+            _builder.append("\t\t");
+            _builder.append("c.gridy = ");
+            _builder.append(k, "\t\t");
+            _builder.append(";\t\t");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t\t");
+            _builder.append("fields.add(check");
+            _builder.append(i, "\t\t");
+            _builder.append("_");
+            _builder.append(j_4, "\t\t");
+            _builder.append(", c);");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t\t");
+            _builder.append(j_4 = (j_4 + 1), "\t\t");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t\t");
+            _builder.append(k = (k + 1), "\t\t");
+            _builder.newLineIfNotEmpty();
+          }
+        }
+        _builder.append("\t\t");
+        _builder.newLine();
+        _builder.append("\t\t");
+        _builder.append("buttons = new JPanel();");
+        _builder.newLine();
+        _builder.append("\t\t");
+        _builder.append(j_4 = 0, "\t\t");
+        _builder.newLineIfNotEmpty();
+        {
+          EList<Boton> _botones = pagina_5.getBotones();
+          for(final Boton boton : _botones) {
+            _builder.append("\t\t");
+            _builder.append("JButton button");
+            _builder.append(i, "\t\t");
+            _builder.append("_");
+            _builder.append(j_4, "\t\t");
+            _builder.append(" = new JButton(\"");
+            String _tag_3 = boton.getTag();
+            _builder.append(_tag_3, "\t\t");
+            _builder.append("\");");
+            _builder.newLineIfNotEmpty();
+            {
+              if ((boton instanceof BotonNavegar)) {
+                _builder.append("\t\t");
+                _builder.append("button");
+                _builder.append(i, "\t\t");
+                _builder.append("_");
+                _builder.append(j_4, "\t\t");
+                _builder.append(".setActionCommand(\"button");
+                _builder.append(i, "\t\t");
+                _builder.append("_");
+                _builder.append(j_4, "\t\t");
+                _builder.append("\");");
+                _builder.newLineIfNotEmpty();
+                _builder.append("\t\t");
+                _builder.append("button");
+                _builder.append(i, "\t\t");
+                _builder.append("_");
+                _builder.append(j_4, "\t\t");
+                _builder.append(".addActionListener(new ChangePageListener(this));");
+                _builder.newLineIfNotEmpty();
+              } else {
+                if ((boton instanceof BotonCerrar)) {
+                  _builder.append("\t\t");
+                  _builder.append("button");
+                  _builder.append(i, "\t\t");
+                  _builder.append("_");
+                  _builder.append(j_4, "\t\t");
+                  _builder.append(".addActionListener(new CloseWizardListener(this));");
+                  _builder.newLineIfNotEmpty();
+                } else {
+                }
+              }
+            }
+            _builder.append("\t\t");
+            _builder.append("buttons.add(button");
+            _builder.append(i, "\t\t");
+            _builder.append("_");
+            _builder.append(j_4, "\t\t");
+            _builder.append(");");
+            _builder.newLineIfNotEmpty();
+            _builder.append("\t\t");
+            _builder.append(j_4 = (j_4 + 1), "\t\t");
+            _builder.newLineIfNotEmpty();
+          }
+        }
+        _builder.append("\t\t");
+        _builder.append("page = new JPanel(new BorderLayout());");
+        _builder.newLine();
+        _builder.append("\t\t");
+        _builder.append("page.add(fields,  BorderLayout.CENTER);");
+        _builder.newLine();
+        _builder.append("\t\t");
+        _builder.append("page.add(buttons, BorderLayout.SOUTH);");
+        _builder.newLine();
+        _builder.append("\t\t");
+        _builder.append("wizard.add(page, PAGE_");
+        _builder.append(i, "\t\t");
+        _builder.append(");");
+        _builder.newLineIfNotEmpty();
+        _builder.append("\t\t");
+        _builder.append(i = (i + 1), "\t\t");
+        _builder.newLineIfNotEmpty();
+      }
+    }
+    _builder.append("\t\t");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("getContentPane().add(wizard);");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("/**");
+    _builder.newLine();
+    _builder.append("\t ");
+    _builder.append("* show wizard");
+    _builder.newLine();
+    _builder.append("\t ");
+    _builder.append("*/");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("public void showWizard() {");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("this.pack();");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("this.setVisible(true);");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("/**");
+    _builder.newLine();
+    _builder.append("\t ");
+    _builder.append("* show page of wizard");
+    _builder.newLine();
+    _builder.append("\t ");
+    _builder.append("*/");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("public void showPage(String page) {");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("layout.show(wizard, page);");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.append("}");
+    _builder.newLine();
+    return _builder;
   }
 }

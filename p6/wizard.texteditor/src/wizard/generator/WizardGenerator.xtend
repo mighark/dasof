@@ -7,6 +7,9 @@ import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
+import wizard.Wizard
+import wizard.BotonNavegar
+import wizard.BotonCerrar
 
 /**
  * Generates code from your model files on save.
@@ -15,11 +18,189 @@ import org.eclipse.xtext.generator.IGeneratorContext
  */
 class WizardGenerator extends AbstractGenerator {
 
+	CharSequence MAIN_FILE = 'package main;\nimport wizard.Wizard;\npublic class Main {\n\tpublic static void main(String[] args) {\n\t\tWizard wizard = new Wizard();\n\t\twizard.showWizard();\n\t}\n}'
+	CharSequence CLOSE_WIZARD_FILE = 'package listeners;\nimport java.awt.event.ActionEvent;\nimport java.awt.event.ActionListener;\nimport javax.swing.JFrame;\npublic class CloseWizardListener implements ActionListener {\n\tprivate JFrame window;\n\tpublic CloseWizardListener(JFrame window) {\n\t\tthis.window = window;\n\t}\n\t@Override\n\tpublic void actionPerformed(ActionEvent arg0) {\n\t\twindow.setVisible(false);\n\t\twindow.dispose();\n\t}\n}'
+	
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
-//		fsa.generateFile('greetings.txt', 'People to greet: ' + 
-//			resource.allContents
-//				.filter(Greeting)
-//				.map[name]
-//				.join(', '))
+		for(wizard: resource.allContents.toIterable.filter(Wizard)) {
+			fsa.generateFile('wizard/Wizard.java', compile(wizard))
+			fsa.generateFile('listeners/ChangePageListener.java', 'WIP')
+		}
+		fsa.generateFile('src/main.java', MAIN_FILE)
+		fsa.generateFile('listeners/CloseWizardListener.java', CLOSE_WIZARD_FILE)
 	}
+	
+	def compile(Wizard wizard) {
+		'''
+		package wizard;
+		
+		import java.awt.BorderLayout;
+		import java.awt.CardLayout;
+		import java.awt.GridBagConstraints;
+		import java.awt.GridBagLayout;
+		
+		import javax.swing.JButton;
+		import javax.swing.JCheckBox;
+		import javax.swing.JFrame;
+		import javax.swing.JLabel;
+		import javax.swing.JPanel;
+		import javax.swing.JTextField;
+		
+		import listeners.ChangePageListener;
+		import listeners.CloseWizardListener;
+		
+		public class Wizard extends JFrame {
+			«var i = 0»
+			«FOR pagina: wizard.paginas»
+				public static final String PAGE_«i» = "«pagina.name»"
+				«i = i + 1»
+			«ENDFOR»
+			
+			private JPanel wizard = new JPanel();
+			private CardLayout layout = new CardLayout();
+			private JTextField 
+			«i = 0»
+			«FOR pagina: wizard.paginas»
+				«var j = 0»
+				«FOR texto: pagina.camposTexto» 
+					text«i»_«j», 
+					«j = j + 1»
+				«ENDFOR»
+				«i = i + 1»
+			«ENDFOR»
+			;
+			private JCheckBox 
+			«i = 0»
+			«FOR pagina: wizard.paginas»
+				«var j = 0»
+				«FOR casilla: pagina.casillasVerif» 
+					check«i»_«j», 
+					«j = j + 1»
+				«ENDFOR»
+				«i = i + 1»
+			«ENDFOR»
+			;
+			
+			«i = 0»
+			«FOR pagina: wizard.paginas»
+				«var j = 0»
+				«FOR casilla: pagina.casillasVerif» 
+					public boolean check«i»_«j»() { return check«i»_«j».isSelected(); }
+					public void check«i»_«j»(boolean v) { check«i»_«j».setSelected(v); }
+					«j = j + 1»
+				«ENDFOR»
+				«i = i + 1»
+			«ENDFOR»
+			
+			«i = 0»
+			«FOR pagina: wizard.paginas»
+				«var j = 0»
+				«FOR texto: pagina.camposTexto» 
+					public String text«i»_«j»() { return text«i»_«j».getText(); }
+					public void text«i»_«j»(String v) { text«i»_«j».setText(v); }
+					«j = j + 1»
+				«ENDFOR»
+				«i = i + 1»
+			«ENDFOR»
+			
+			public Wizard () {
+				super ("«wizard.titulo»");
+				
+				JPanel page, fields, buttons;
+				GridBagConstraints c = new GridBagConstraints();		
+				c.ipadx = 10;
+				c.anchor = GridBagConstraints.WEST;
+				
+				// panel containing all pages
+				wizard = new JPanel(layout);
+				
+				«i = 0»
+				«FOR pagina: wizard.paginas»
+					fields = new JPanel(new GridBagLayout());
+					«var j = 0»
+					«var k = 0»
+					«FOR campo: pagina.camposTexto»
+						JLabel labelt«i»_«j» = new JLabel("«campo.tag»");
+						c.gridx = 0;
+						c.gridy = «k»;	
+						fields.add(labelt«i»_«j», c);
+						text«i»_«j»  = new JTextField(10);
+						c.gridx = 1;
+						c.gridy = «k»;		
+						fields.add(text«i»_«j», c);
+						«j = j + 1»
+						«k = k + 2»
+					«ENDFOR»
+					«j = 0»
+					«FOR casilla: pagina.casillasVerif»
+						JLabel labelc«i»_«j» = new JLabel("«casilla.tag»");
+						c.gridx = 0;
+						c.gridy = «k»;	
+						fields.add(labelc«i»_«j», c);
+						check«i»_«j»  = new JCheckBox();
+						c.gridx = 1;
+						c.gridy = «k»;		
+						fields.add(check«i»_«j», c);
+						«j = j + 1»
+						«k = k + 1»
+					«ENDFOR»
+					«j = 0»
+					«FOR casilla: pagina.casillasVerif»
+						JLabel labelc«i»_«j» = new JLabel("«casilla.tag»");
+						c.gridx = 0;
+						c.gridy = «k»;	
+						fields.add(labelc«i»_«j», c);
+						check«i»_«j»  = new JCheckBox();
+						c.gridx = 1;
+						c.gridy = «k»;		
+						fields.add(check«i»_«j», c);
+						«j = j + 1»
+						«k = k + 1»
+					«ENDFOR»
+					
+					buttons = new JPanel();
+					«j = 0»
+					«FOR boton: pagina.botones»
+						JButton button«i»_«j» = new JButton("«boton.tag»");
+						«IF boton instanceof BotonNavegar»
+							button«i»_«j».setActionCommand("button«i»_«j»");
+							button«i»_«j».addActionListener(new ChangePageListener(this));
+						«ELSEIF boton instanceof BotonCerrar»
+							button«i»_«j».addActionListener(new CloseWizardListener(this));
+						«ELSE»
+							«««VER COMO HACER BOTONES MENSAJE
+						«ENDIF»
+						buttons.add(button«i»_«j»);
+						«j = j + 1»
+					«ENDFOR»
+					page = new JPanel(new BorderLayout());
+					page.add(fields,  BorderLayout.CENTER);
+					page.add(buttons, BorderLayout.SOUTH);
+					wizard.add(page, PAGE_«i»);
+					«i = i + 1»
+				«ENDFOR»
+				
+				getContentPane().add(wizard);
+			}
+			
+			/**
+			 * show wizard
+			 */
+			public void showWizard() {
+				this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				this.pack();
+				this.setVisible(true);
+			}
+		
+			/**
+			 * show page of wizard
+			 */
+			public void showPage(String page) {
+				layout.show(wizard, page);
+			}
+		}
+		'''
+	}
+	
+	
 }
