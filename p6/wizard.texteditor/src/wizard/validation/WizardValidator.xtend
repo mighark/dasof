@@ -109,11 +109,13 @@ class WizardValidator extends AbstractWizardValidator {
 	@Check
 	def checkPaginaBotonesNoSoloMensajes(Pagina pagina) {
 		var result = false
-		pagina.botones.takeWhile[result].forEach [elem, index |
-			if (elem instanceof BotonCerrar || elem instanceof BotonNavegar) {
+		for(Boton boton: pagina.botones) {
+			if(!result) {
+				if (boton instanceof BotonCerrar || boton instanceof BotonNavegar) {
 				result = true
+				}
 			}
-		]
+		}
 		
 		if(!result) {
 			error('Una página debe tener al menos un botón de navegar o de cerrar',

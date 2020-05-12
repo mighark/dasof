@@ -10,6 +10,8 @@ import org.eclipse.xtext.generator.IGeneratorContext
 import wizard.Wizard
 import wizard.BotonNavegar
 import wizard.BotonCerrar
+import wizard.Pagina
+import wizard.BotonMensaje
 
 /**
  * Generates code from your model files on save.
@@ -17,17 +19,15 @@ import wizard.BotonCerrar
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#code-generation
  */
 class WizardGenerator extends AbstractGenerator {
-
-	CharSequence MAIN_FILE = 'package main;\nimport wizard.Wizard;\npublic class Main {\n\tpublic static void main(String[] args) {\n\t\tWizard wizard = new Wizard();\n\t\twizard.showWizard();\n\t}\n}'
-	CharSequence CLOSE_WIZARD_FILE = 'package listeners;\nimport java.awt.event.ActionEvent;\nimport java.awt.event.ActionListener;\nimport javax.swing.JFrame;\npublic class CloseWizardListener implements ActionListener {\n\tprivate JFrame window;\n\tpublic CloseWizardListener(JFrame window) {\n\t\tthis.window = window;\n\t}\n\t@Override\n\tpublic void actionPerformed(ActionEvent arg0) {\n\t\twindow.setVisible(false);\n\t\twindow.dispose();\n\t}\n}'
 	
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		for(wizard: resource.allContents.toIterable.filter(Wizard)) {
-			fsa.generateFile('wizard/Wizard.java', compile(wizard))
-			fsa.generateFile('listeners/ChangePageListener.java', 'WIP')
+			fsa.generateFile('src/wizard/Wizard.java', compile(wizard))
+			fsa.generateFile('src/listeners/ChangePageListener.java', compileListener(wizard))
 		}
-		fsa.generateFile('src/main.java', MAIN_FILE)
-		fsa.generateFile('listeners/CloseWizardListener.java', CLOSE_WIZARD_FILE)
+		fsa.generateFile('src/main/Main.java', compileMain)
+		fsa.generateFile('src/listeners/CloseWizardListener.java', compileClose())
+		fsa.generateFile('src/listeners/ShowMessageListener.java', compileMessage())
 	}
 	
 	def compile(Wizard wizard) {
@@ -48,59 +48,56 @@ class WizardGenerator extends AbstractGenerator {
 		
 		import listeners.ChangePageListener;
 		import listeners.CloseWizardListener;
+		import listeners.ShowMessageListener;
 		
 		public class Wizard extends JFrame {
 			«var i = 0»
 			«FOR pagina: wizard.paginas»
-				public static final String PAGE_«i» = "«pagina.name»"
-				«i = i + 1»
+				public static final String PAGE_«i» = "«pagina.name»";
+				//«i = i + 1»
 			«ENDFOR»
 			
 			private JPanel wizard = new JPanel();
 			private CardLayout layout = new CardLayout();
-			private JTextField 
-			«i = 0»
+			//«i = 0»
 			«FOR pagina: wizard.paginas»
 				«var j = 0»
 				«FOR texto: pagina.camposTexto» 
-					text«i»_«j», 
-					«j = j + 1»
+					private JTextField text«i»_«j»; 
+					//«j = j + 1»
 				«ENDFOR»
-				«i = i + 1»
-			«ENDFOR»
-			;
-			private JCheckBox 
-			«i = 0»
+				//«i = i + 1»
+			«ENDFOR»	
+			//«i = 0»
 			«FOR pagina: wizard.paginas»
 				«var j = 0»
 				«FOR casilla: pagina.casillasVerif» 
-					check«i»_«j», 
-					«j = j + 1»
+					private JCheckBox check«i»_«j»; 
+					//«j = j + 1»
 				«ENDFOR»
-				«i = i + 1»
+				//«i = i + 1»
 			«ENDFOR»
-			;
 			
-			«i = 0»
+			//«i = 0»
 			«FOR pagina: wizard.paginas»
 				«var j = 0»
 				«FOR casilla: pagina.casillasVerif» 
 					public boolean check«i»_«j»() { return check«i»_«j».isSelected(); }
 					public void check«i»_«j»(boolean v) { check«i»_«j».setSelected(v); }
-					«j = j + 1»
+					//«j = j + 1»
 				«ENDFOR»
-				«i = i + 1»
+				//«i = i + 1»
 			«ENDFOR»
 			
-			«i = 0»
+			//«i = 0»
 			«FOR pagina: wizard.paginas»
 				«var j = 0»
 				«FOR texto: pagina.camposTexto» 
 					public String text«i»_«j»() { return text«i»_«j».getText(); }
 					public void text«i»_«j»(String v) { text«i»_«j».setText(v); }
-					«j = j + 1»
+					//«j = j + 1»
 				«ENDFOR»
-				«i = i + 1»
+				//«i = i + 1»
 			«ENDFOR»
 			
 			public Wizard () {
@@ -114,7 +111,7 @@ class WizardGenerator extends AbstractGenerator {
 				// panel containing all pages
 				wizard = new JPanel(layout);
 				
-				«i = 0»
+				//«i = 0»
 				«FOR pagina: wizard.paginas»
 					fields = new JPanel(new GridBagLayout());
 					«var j = 0»
@@ -128,38 +125,28 @@ class WizardGenerator extends AbstractGenerator {
 						c.gridx = 1;
 						c.gridy = «k»;		
 						fields.add(text«i»_«j», c);
-						«j = j + 1»
-						«k = k + 2»
+						//«j = j + 1»
+						//«k = k + 2»
 					«ENDFOR»
-					«j = 0»
+					//«j = 0»
 					«FOR casilla: pagina.casillasVerif»
 						JLabel labelc«i»_«j» = new JLabel("«casilla.tag»");
 						c.gridx = 0;
 						c.gridy = «k»;	
 						fields.add(labelc«i»_«j», c);
 						check«i»_«j»  = new JCheckBox();
+						«IF casilla.porDef»
+							check«i»_«j».setSelected(true);
+						«ENDIF»
 						c.gridx = 1;
 						c.gridy = «k»;		
 						fields.add(check«i»_«j», c);
-						«j = j + 1»
-						«k = k + 1»
-					«ENDFOR»
-					«j = 0»
-					«FOR casilla: pagina.casillasVerif»
-						JLabel labelc«i»_«j» = new JLabel("«casilla.tag»");
-						c.gridx = 0;
-						c.gridy = «k»;	
-						fields.add(labelc«i»_«j», c);
-						check«i»_«j»  = new JCheckBox();
-						c.gridx = 1;
-						c.gridy = «k»;		
-						fields.add(check«i»_«j», c);
-						«j = j + 1»
-						«k = k + 1»
+						//«j = j + 1»
+						//«k = k + 1»
 					«ENDFOR»
 					
 					buttons = new JPanel();
-					«j = 0»
+					//«j = 0»
 					«FOR boton: pagina.botones»
 						JButton button«i»_«j» = new JButton("«boton.tag»");
 						«IF boton instanceof BotonNavegar»
@@ -167,17 +154,17 @@ class WizardGenerator extends AbstractGenerator {
 							button«i»_«j».addActionListener(new ChangePageListener(this));
 						«ELSEIF boton instanceof BotonCerrar»
 							button«i»_«j».addActionListener(new CloseWizardListener(this));
-						«ELSE»
-							«««VER COMO HACER BOTONES MENSAJE
+						«ELSEIF boton instanceof BotonMensaje»
+							button«i»_«j».addActionListener(new ShowMessageListener(this, "«(boton as BotonMensaje).mensaje»"));
 						«ENDIF»
 						buttons.add(button«i»_«j»);
-						«j = j + 1»
+						//«j = j + 1»
 					«ENDFOR»
 					page = new JPanel(new BorderLayout());
 					page.add(fields,  BorderLayout.CENTER);
 					page.add(buttons, BorderLayout.SOUTH);
 					wizard.add(page, PAGE_«i»);
-					«i = i + 1»
+					//«i = i + 1»
 				«ENDFOR»
 				
 				getContentPane().add(wizard);
@@ -201,6 +188,158 @@ class WizardGenerator extends AbstractGenerator {
 		}
 		'''
 	}
+	
+	def compileListener(Wizard wizard) {
+		'''
+		package listeners;
+		
+		import java.awt.event.ActionEvent;
+		import java.awt.event.ActionListener;
+		
+		import javax.swing.JOptionPane;
+		
+		import wizard.Wizard;
+		
+		public class ChangePageListener implements ActionListener {
+			private Wizard window;
+			
+			public ChangePageListener(Wizard window) {
+				this.window = window;
+			}
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+			«var i = 0»
+			«FOR pagina: wizard.paginas»
+				«var j = 0»
+				«FOR boton: pagina.botones»
+					«IF boton instanceof BotonNavegar»
+					if (arg0.getActionCommand().equals("button«i»_«j»")) {
+						«var k = 0»
+						«FOR campo: pagina.camposTexto»
+							«IF !campo.opcional»
+								if (window.text«i»_«k»().equals("")) {
+									JOptionPane.showMessageDialog(window, "«campo.tag» cannot be empty");
+									return;
+								}
+							«ENDIF»
+							//«k = k + 1»
+						«ENDFOR»
+						«var Pagina defaultDes = null»
+						«var notDefault = false»
+						«FOR destino: (boton as BotonNavegar).destino»
+							«IF destino.casilla === null»
+								//«defaultDes = destino.destino»
+							«ELSE»
+								//«notDefault = true»
+								//«k = 0»
+								«FOR casilla: pagina.casillasVerif»
+									«IF casilla.name.equals(destino.casilla.name)»
+										if (window.check«i»_«k»()) {
+											«var p = 0»
+											«FOR paginaDes: wizard.paginas»
+												«IF destino.destino.name.equals(paginaDes.name)»
+													window.showPage(Wizard.PAGE_«p»);
+												«ENDIF»
+												//«p = p + 1»
+											«ENDFOR»
+										}
+									«ENDIF»
+									//«k = k + 1»
+								«ENDFOR»
+							«ENDIF»
+						«ENDFOR»
+						«IF defaultDes !== null»
+							«IF notDefault»
+								else {
+							«ENDIF»
+							«var p = 0»
+							«FOR paginaDes: wizard.paginas»
+								«IF defaultDes.name.equals(paginaDes.name)»
+									window.showPage(Wizard.PAGE_«p»);
+								«ENDIF»
+								//«p = p + 1»
+							«ENDFOR»
+							«IF notDefault»
+								}
+							«ENDIF»
+						«ENDIF»
+					}
+					«ENDIF»
+					//«j = j + 1»
+				«ENDFOR»
+				//«i = i + 1»
+			«ENDFOR»
+			}
+		}
+		'''
+	}
+	
+	def compileClose() {
+		'''
+		package listeners;
+		
+		import java.awt.event.ActionEvent;
+		import java.awt.event.ActionListener;
+		import javax.swing.JFrame;
+		
+		public class CloseWizardListener implements ActionListener {
+			private JFrame window;
+			
+			public CloseWizardListener(JFrame window) {
+				this.window = window;
+			}
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				window.setVisible(false);
+				window.dispose();
+			}
+		}
+		'''
+	}
+	
+	def compileMessage() {
+		'''
+		package listeners;
+		
+		import java.awt.event.ActionEvent;
+		import java.awt.event.ActionListener;
+		import javax.swing.JFrame;
+		import javax.swing.JOptionPane;
+		
+		public class ShowMessageListener implements ActionListener {
+			private JFrame window;
+			private String message;
+			
+			public ShowMessageListener(JFrame window, String message) {
+				this.window = window;
+				this.message = message;
+			}
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JOptionPane.showMessageDialog(window, message);
+			}
+		}
+		'''
+	}
+	
+	def compileMain() {
+		'''
+		package main;
+		
+		import wizard.Wizard;
+		
+		public class Main {
+			public static void main(String[] args) {
+				Wizard wizard = new Wizard();
+				wizard.showWizard();
+			}
+		}
+		'''
+	}
+	
 	
 	
 }

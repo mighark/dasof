@@ -5,10 +5,12 @@ package wizard.validation;
 
 import com.google.common.base.Objects;
 import java.util.function.Consumer;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.xtext.validation.Check;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
 import org.eclipse.xtext.xbase.lib.Procedures.Procedure2;
 import wizard.Boton;
+import wizard.BotonCerrar;
 import wizard.BotonNavegar;
 import wizard.CampoTexto;
 import wizard.CasillaVerif;
@@ -129,9 +131,19 @@ public class WizardValidator extends AbstractWizardValidator {
   
   @Check
   public void checkPaginaBotonesNoSoloMensajes(final Pagina pagina) {
-    throw new Error("Unresolved compilation problems:"
-      + "\nCannot refer to the non-final variable result inside a lambda expression"
-      + "\nCannot refer to the non-final variable result inside a lambda expression");
+    boolean result = false;
+    EList<Boton> _botones = pagina.getBotones();
+    for (final Boton boton : _botones) {
+      if ((!result)) {
+        if (((boton instanceof BotonCerrar) || (boton instanceof BotonNavegar))) {
+          result = true;
+        }
+      }
+    }
+    if ((!result)) {
+      this.error("Una página debe tener al menos un botón de navegar o de cerrar", 
+        WizardPackage.Literals.PAGINA__BOTONES, "paginaBotonesSoloMensajes");
+    }
   }
   
   @Check

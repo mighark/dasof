@@ -1,0 +1,33 @@
+Wizard "New Java Class" {
+	Paginas:
+		Pagina pagina1 :
+			campos {
+				CampoTexto "Class name"
+			}
+			casillas {
+				CasillaVerif a1 "abstract", CasillaVerif f1 "final", CasillaVerif d1 "default package" selected
+			}
+			botones {
+				Boton navegar "Next" destinos : (pagina2) , (pagina3, d1),
+				Boton mensaje "Help" mensaje "I'm helping",
+				Boton cerrar "Cancel"
+			}
+		Pagina pagina2 :
+			campos {
+				CampoTexto "Package name"
+			}
+			botones {
+				Boton navegar "Next" destinos : (pagina3),
+				Boton cerrar "Cancel"
+			}
+		Pagina pagina3 :
+			casillas {
+				CasillaVerif m3 "create main", CasillaVerif c3 "create constructor", CasillaVerif cc3 "create comments"
+			}
+			botones {
+				Boton navegar "New class" destinos : (pagina1),
+				Boton cerrar "Finish",
+				Boton cerrar "Cancel"
+			}
+		inicial pagina1
+}

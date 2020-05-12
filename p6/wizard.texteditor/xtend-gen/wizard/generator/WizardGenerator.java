@@ -14,9 +14,11 @@ import org.eclipse.xtext.generator.IGeneratorContext;
 import org.eclipse.xtext.xbase.lib.IteratorExtensions;
 import wizard.Boton;
 import wizard.BotonCerrar;
+import wizard.BotonMensaje;
 import wizard.BotonNavegar;
 import wizard.CampoTexto;
 import wizard.CasillaVerif;
+import wizard.Destino;
 import wizard.Pagina;
 import wizard.Wizard;
 
@@ -27,21 +29,18 @@ import wizard.Wizard;
  */
 @SuppressWarnings("all")
 public class WizardGenerator extends AbstractGenerator {
-  private CharSequence MAIN_FILE = "package main;\nimport wizard.Wizard;\npublic class Main {\n\tpublic static void main(String[] args) {\n\t\tWizard wizard = new Wizard();\n\t\twizard.showWizard();\n\t}\n}";
-  
-  private CharSequence CLOSE_WIZARD_FILE = "package listeners;\nimport java.awt.event.ActionEvent;\nimport java.awt.event.ActionListener;\nimport javax.swing.JFrame;\npublic class CloseWizardListener implements ActionListener {\n\tprivate JFrame window;\n\tpublic CloseWizardListener(JFrame window) {\n\t\tthis.window = window;\n\t}\n\t@Override\n\tpublic void actionPerformed(ActionEvent arg0) {\n\t\twindow.setVisible(false);\n\t\twindow.dispose();\n\t}\n}";
-  
   @Override
   public void doGenerate(final Resource resource, final IFileSystemAccess2 fsa, final IGeneratorContext context) {
     Iterable<Wizard> _filter = Iterables.<Wizard>filter(IteratorExtensions.<EObject>toIterable(resource.getAllContents()), Wizard.class);
     for (final Wizard wizard : _filter) {
       {
-        fsa.generateFile("wizard/Wizard.java", this.compile(wizard));
-        fsa.generateFile("listeners/ChangePageListener.java", "WIP");
+        fsa.generateFile("src/wizard/Wizard.java", this.compile(wizard));
+        fsa.generateFile("src/listeners/ChangePageListener.java", this.compileListener(wizard));
       }
     }
-    fsa.generateFile("src/main.java", this.MAIN_FILE);
-    fsa.generateFile("listeners/CloseWizardListener.java", this.CLOSE_WIZARD_FILE);
+    fsa.generateFile("src/main/Main.java", this.compileMain());
+    fsa.generateFile("src/listeners/CloseWizardListener.java", this.compileClose());
+    fsa.generateFile("src/listeners/ShowMessageListener.java", this.compileMessage());
   }
   
   public CharSequence compile(final Wizard wizard) {
@@ -75,6 +74,8 @@ public class WizardGenerator extends AbstractGenerator {
     _builder.newLine();
     _builder.append("import listeners.CloseWizardListener;");
     _builder.newLine();
+    _builder.append("import listeners.ShowMessageListener;");
+    _builder.newLine();
     _builder.newLine();
     _builder.append("public class Wizard extends JFrame {");
     _builder.newLine();
@@ -90,9 +91,10 @@ public class WizardGenerator extends AbstractGenerator {
         _builder.append(" = \"");
         String _name = pagina.getName();
         _builder.append(_name, "\t");
-        _builder.append("\"");
+        _builder.append("\";");
         _builder.newLineIfNotEmpty();
         _builder.append("\t");
+        _builder.append("//");
         _builder.append(i = (i + 1), "\t");
         _builder.newLineIfNotEmpty();
       }
@@ -106,9 +108,7 @@ public class WizardGenerator extends AbstractGenerator {
     _builder.append("private CardLayout layout = new CardLayout();");
     _builder.newLine();
     _builder.append("\t");
-    _builder.append("private JTextField ");
-    _builder.newLine();
-    _builder.append("\t");
+    _builder.append("//");
     _builder.append(i = 0, "\t");
     _builder.newLineIfNotEmpty();
     {
@@ -121,29 +121,26 @@ public class WizardGenerator extends AbstractGenerator {
           EList<CampoTexto> _camposTexto = pagina_1.getCamposTexto();
           for(final CampoTexto texto : _camposTexto) {
             _builder.append("\t");
-            _builder.append("text");
+            _builder.append("private JTextField text");
             _builder.append(i, "\t");
             _builder.append("_");
             _builder.append(j, "\t");
-            _builder.append(", ");
+            _builder.append("; ");
             _builder.newLineIfNotEmpty();
             _builder.append("\t");
+            _builder.append("//");
             _builder.append(j = (j + 1), "\t");
             _builder.newLineIfNotEmpty();
           }
         }
         _builder.append("\t");
+        _builder.append("//");
         _builder.append(i = (i + 1), "\t");
         _builder.newLineIfNotEmpty();
       }
     }
     _builder.append("\t");
-    _builder.append(";");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append("private JCheckBox ");
-    _builder.newLine();
-    _builder.append("\t");
+    _builder.append("//");
     _builder.append(i = 0, "\t");
     _builder.newLineIfNotEmpty();
     {
@@ -156,28 +153,28 @@ public class WizardGenerator extends AbstractGenerator {
           EList<CasillaVerif> _casillasVerif = pagina_2.getCasillasVerif();
           for(final CasillaVerif casilla : _casillasVerif) {
             _builder.append("\t");
-            _builder.append("check");
+            _builder.append("private JCheckBox check");
             _builder.append(i, "\t");
             _builder.append("_");
             _builder.append(j_1, "\t");
-            _builder.append(", ");
+            _builder.append("; ");
             _builder.newLineIfNotEmpty();
             _builder.append("\t");
+            _builder.append("//");
             _builder.append(j_1 = (j_1 + 1), "\t");
             _builder.newLineIfNotEmpty();
           }
         }
         _builder.append("\t");
+        _builder.append("//");
         _builder.append(i = (i + 1), "\t");
         _builder.newLineIfNotEmpty();
       }
     }
     _builder.append("\t");
-    _builder.append(";");
     _builder.newLine();
     _builder.append("\t");
-    _builder.newLine();
-    _builder.append("\t");
+    _builder.append("//");
     _builder.append(i = 0, "\t");
     _builder.newLineIfNotEmpty();
     {
@@ -212,11 +209,13 @@ public class WizardGenerator extends AbstractGenerator {
             _builder.append(".setSelected(v); }");
             _builder.newLineIfNotEmpty();
             _builder.append("\t");
+            _builder.append("//");
             _builder.append(j_2 = (j_2 + 1), "\t");
             _builder.newLineIfNotEmpty();
           }
         }
         _builder.append("\t");
+        _builder.append("//");
         _builder.append(i = (i + 1), "\t");
         _builder.newLineIfNotEmpty();
       }
@@ -224,6 +223,7 @@ public class WizardGenerator extends AbstractGenerator {
     _builder.append("\t");
     _builder.newLine();
     _builder.append("\t");
+    _builder.append("//");
     _builder.append(i = 0, "\t");
     _builder.newLineIfNotEmpty();
     {
@@ -258,11 +258,13 @@ public class WizardGenerator extends AbstractGenerator {
             _builder.append(".setText(v); }");
             _builder.newLineIfNotEmpty();
             _builder.append("\t");
+            _builder.append("//");
             _builder.append(j_3 = (j_3 + 1), "\t");
             _builder.newLineIfNotEmpty();
           }
         }
         _builder.append("\t");
+        _builder.append("//");
         _builder.append(i = (i + 1), "\t");
         _builder.newLineIfNotEmpty();
       }
@@ -303,6 +305,7 @@ public class WizardGenerator extends AbstractGenerator {
     _builder.append("\t\t");
     _builder.newLine();
     _builder.append("\t\t");
+    _builder.append("//");
     _builder.append(i = 0, "\t\t");
     _builder.newLineIfNotEmpty();
     {
@@ -368,14 +371,17 @@ public class WizardGenerator extends AbstractGenerator {
             _builder.append(", c);");
             _builder.newLineIfNotEmpty();
             _builder.append("\t\t");
+            _builder.append("//");
             _builder.append(j_4 = (j_4 + 1), "\t\t");
             _builder.newLineIfNotEmpty();
             _builder.append("\t\t");
+            _builder.append("//");
             _builder.append(k = (k + 2), "\t\t");
             _builder.newLineIfNotEmpty();
           }
         }
         _builder.append("\t\t");
+        _builder.append("//");
         _builder.append(j_4 = 0, "\t\t");
         _builder.newLineIfNotEmpty();
         {
@@ -413,6 +419,18 @@ public class WizardGenerator extends AbstractGenerator {
             _builder.append(j_4, "\t\t");
             _builder.append("  = new JCheckBox();");
             _builder.newLineIfNotEmpty();
+            {
+              boolean _isPorDef = casilla_2.isPorDef();
+              if (_isPorDef) {
+                _builder.append("\t\t");
+                _builder.append("check");
+                _builder.append(i, "\t\t");
+                _builder.append("_");
+                _builder.append(j_4, "\t\t");
+                _builder.append(".setSelected(true);");
+                _builder.newLineIfNotEmpty();
+              }
+            }
             _builder.append("\t\t");
             _builder.append("c.gridx = 1;");
             _builder.newLine();
@@ -429,70 +447,11 @@ public class WizardGenerator extends AbstractGenerator {
             _builder.append(", c);");
             _builder.newLineIfNotEmpty();
             _builder.append("\t\t");
+            _builder.append("//");
             _builder.append(j_4 = (j_4 + 1), "\t\t");
             _builder.newLineIfNotEmpty();
             _builder.append("\t\t");
-            _builder.append(k = (k + 1), "\t\t");
-            _builder.newLineIfNotEmpty();
-          }
-        }
-        _builder.append("\t\t");
-        _builder.append(j_4 = 0, "\t\t");
-        _builder.newLineIfNotEmpty();
-        {
-          EList<CasillaVerif> _casillasVerif_3 = pagina_5.getCasillasVerif();
-          for(final CasillaVerif casilla_3 : _casillasVerif_3) {
-            _builder.append("\t\t");
-            _builder.append("JLabel labelc");
-            _builder.append(i, "\t\t");
-            _builder.append("_");
-            _builder.append(j_4, "\t\t");
-            _builder.append(" = new JLabel(\"");
-            String _tag_2 = casilla_3.getTag();
-            _builder.append(_tag_2, "\t\t");
-            _builder.append("\");");
-            _builder.newLineIfNotEmpty();
-            _builder.append("\t\t");
-            _builder.append("c.gridx = 0;");
-            _builder.newLine();
-            _builder.append("\t\t");
-            _builder.append("c.gridy = ");
-            _builder.append(k, "\t\t");
-            _builder.append(";\t");
-            _builder.newLineIfNotEmpty();
-            _builder.append("\t\t");
-            _builder.append("fields.add(labelc");
-            _builder.append(i, "\t\t");
-            _builder.append("_");
-            _builder.append(j_4, "\t\t");
-            _builder.append(", c);");
-            _builder.newLineIfNotEmpty();
-            _builder.append("\t\t");
-            _builder.append("check");
-            _builder.append(i, "\t\t");
-            _builder.append("_");
-            _builder.append(j_4, "\t\t");
-            _builder.append("  = new JCheckBox();");
-            _builder.newLineIfNotEmpty();
-            _builder.append("\t\t");
-            _builder.append("c.gridx = 1;");
-            _builder.newLine();
-            _builder.append("\t\t");
-            _builder.append("c.gridy = ");
-            _builder.append(k, "\t\t");
-            _builder.append(";\t\t");
-            _builder.newLineIfNotEmpty();
-            _builder.append("\t\t");
-            _builder.append("fields.add(check");
-            _builder.append(i, "\t\t");
-            _builder.append("_");
-            _builder.append(j_4, "\t\t");
-            _builder.append(", c);");
-            _builder.newLineIfNotEmpty();
-            _builder.append("\t\t");
-            _builder.append(j_4 = (j_4 + 1), "\t\t");
-            _builder.newLineIfNotEmpty();
-            _builder.append("\t\t");
+            _builder.append("//");
             _builder.append(k = (k + 1), "\t\t");
             _builder.newLineIfNotEmpty();
           }
@@ -503,6 +462,7 @@ public class WizardGenerator extends AbstractGenerator {
         _builder.append("buttons = new JPanel();");
         _builder.newLine();
         _builder.append("\t\t");
+        _builder.append("//");
         _builder.append(j_4 = 0, "\t\t");
         _builder.newLineIfNotEmpty();
         {
@@ -514,8 +474,8 @@ public class WizardGenerator extends AbstractGenerator {
             _builder.append("_");
             _builder.append(j_4, "\t\t");
             _builder.append(" = new JButton(\"");
-            String _tag_3 = boton.getTag();
-            _builder.append(_tag_3, "\t\t");
+            String _tag_2 = boton.getTag();
+            _builder.append(_tag_2, "\t\t");
             _builder.append("\");");
             _builder.newLineIfNotEmpty();
             {
@@ -548,6 +508,18 @@ public class WizardGenerator extends AbstractGenerator {
                   _builder.append(".addActionListener(new CloseWizardListener(this));");
                   _builder.newLineIfNotEmpty();
                 } else {
+                  if ((boton instanceof BotonMensaje)) {
+                    _builder.append("\t\t");
+                    _builder.append("button");
+                    _builder.append(i, "\t\t");
+                    _builder.append("_");
+                    _builder.append(j_4, "\t\t");
+                    _builder.append(".addActionListener(new ShowMessageListener(this, \"");
+                    String _mensaje = ((BotonMensaje) boton).getMensaje();
+                    _builder.append(_mensaje, "\t\t");
+                    _builder.append("\"));");
+                    _builder.newLineIfNotEmpty();
+                  }
                 }
               }
             }
@@ -559,6 +531,7 @@ public class WizardGenerator extends AbstractGenerator {
             _builder.append(");");
             _builder.newLineIfNotEmpty();
             _builder.append("\t\t");
+            _builder.append("//");
             _builder.append(j_4 = (j_4 + 1), "\t\t");
             _builder.newLineIfNotEmpty();
           }
@@ -578,6 +551,7 @@ public class WizardGenerator extends AbstractGenerator {
         _builder.append(");");
         _builder.newLineIfNotEmpty();
         _builder.append("\t\t");
+        _builder.append("//");
         _builder.append(i = (i + 1), "\t\t");
         _builder.newLineIfNotEmpty();
       }
@@ -631,6 +605,404 @@ public class WizardGenerator extends AbstractGenerator {
     _builder.newLine();
     _builder.append("\t\t");
     _builder.append("layout.show(wizard, page);");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.append("}");
+    _builder.newLine();
+    return _builder;
+  }
+  
+  public CharSequence compileListener(final Wizard wizard) {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("package listeners;");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("import java.awt.event.ActionEvent;");
+    _builder.newLine();
+    _builder.append("import java.awt.event.ActionListener;");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("import javax.swing.JOptionPane;");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("import wizard.Wizard;");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("public class ChangePageListener implements ActionListener {");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("private Wizard window;");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("public ChangePageListener(Wizard window) {");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("this.window = window;");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("@Override");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("public void actionPerformed(ActionEvent arg0) {");
+    _builder.newLine();
+    _builder.append("\t");
+    int i = 0;
+    _builder.newLineIfNotEmpty();
+    {
+      EList<Pagina> _paginas = wizard.getPaginas();
+      for(final Pagina pagina : _paginas) {
+        _builder.append("\t");
+        int j = 0;
+        _builder.newLineIfNotEmpty();
+        {
+          EList<Boton> _botones = pagina.getBotones();
+          for(final Boton boton : _botones) {
+            {
+              if ((boton instanceof BotonNavegar)) {
+                _builder.append("\t");
+                _builder.append("if (arg0.getActionCommand().equals(\"button");
+                _builder.append(i, "\t");
+                _builder.append("_");
+                _builder.append(j, "\t");
+                _builder.append("\")) {");
+                _builder.newLineIfNotEmpty();
+                _builder.append("\t");
+                _builder.append("\t");
+                int k = 0;
+                _builder.newLineIfNotEmpty();
+                {
+                  EList<CampoTexto> _camposTexto = pagina.getCamposTexto();
+                  for(final CampoTexto campo : _camposTexto) {
+                    {
+                      boolean _isOpcional = campo.isOpcional();
+                      boolean _not = (!_isOpcional);
+                      if (_not) {
+                        _builder.append("\t");
+                        _builder.append("\t");
+                        _builder.append("if (window.text");
+                        _builder.append(i, "\t\t");
+                        _builder.append("_");
+                        _builder.append(k, "\t\t");
+                        _builder.append("().equals(\"\")) {");
+                        _builder.newLineIfNotEmpty();
+                        _builder.append("\t");
+                        _builder.append("\t");
+                        _builder.append("\t");
+                        _builder.append("JOptionPane.showMessageDialog(window, \"");
+                        String _tag = campo.getTag();
+                        _builder.append(_tag, "\t\t\t");
+                        _builder.append(" cannot be empty\");");
+                        _builder.newLineIfNotEmpty();
+                        _builder.append("\t");
+                        _builder.append("\t");
+                        _builder.append("\t");
+                        _builder.append("return;");
+                        _builder.newLine();
+                        _builder.append("\t");
+                        _builder.append("\t");
+                        _builder.append("}");
+                        _builder.newLine();
+                      }
+                    }
+                    _builder.append("\t");
+                    _builder.append("\t");
+                    _builder.append("//");
+                    _builder.append(k = (k + 1), "\t\t");
+                    _builder.newLineIfNotEmpty();
+                  }
+                }
+                _builder.append("\t");
+                _builder.append("\t");
+                Pagina defaultDes = null;
+                _builder.newLineIfNotEmpty();
+                _builder.append("\t");
+                _builder.append("\t");
+                boolean notDefault = false;
+                _builder.newLineIfNotEmpty();
+                {
+                  EList<Destino> _destino = ((BotonNavegar) boton).getDestino();
+                  for(final Destino destino : _destino) {
+                    {
+                      CasillaVerif _casilla = destino.getCasilla();
+                      boolean _tripleEquals = (_casilla == null);
+                      if (_tripleEquals) {
+                        _builder.append("\t");
+                        _builder.append("\t");
+                        _builder.append("//");
+                        _builder.append(defaultDes = destino.getDestino(), "\t\t");
+                        _builder.newLineIfNotEmpty();
+                      } else {
+                        _builder.append("\t");
+                        _builder.append("\t");
+                        _builder.append("//");
+                        _builder.append(notDefault = true, "\t\t");
+                        _builder.newLineIfNotEmpty();
+                        _builder.append("\t");
+                        _builder.append("\t");
+                        _builder.append("//");
+                        _builder.append(k = 0, "\t\t");
+                        _builder.newLineIfNotEmpty();
+                        {
+                          EList<CasillaVerif> _casillasVerif = pagina.getCasillasVerif();
+                          for(final CasillaVerif casilla : _casillasVerif) {
+                            {
+                              boolean _equals = casilla.getName().equals(destino.getCasilla().getName());
+                              if (_equals) {
+                                _builder.append("\t");
+                                _builder.append("\t");
+                                _builder.append("if (window.check");
+                                _builder.append(i, "\t\t");
+                                _builder.append("_");
+                                _builder.append(k, "\t\t");
+                                _builder.append("()) {");
+                                _builder.newLineIfNotEmpty();
+                                _builder.append("\t");
+                                _builder.append("\t");
+                                _builder.append("\t");
+                                int p = 0;
+                                _builder.newLineIfNotEmpty();
+                                {
+                                  EList<Pagina> _paginas_1 = wizard.getPaginas();
+                                  for(final Pagina paginaDes : _paginas_1) {
+                                    {
+                                      boolean _equals_1 = destino.getDestino().getName().equals(paginaDes.getName());
+                                      if (_equals_1) {
+                                        _builder.append("\t");
+                                        _builder.append("\t");
+                                        _builder.append("\t");
+                                        _builder.append("window.showPage(Wizard.PAGE_");
+                                        _builder.append(p, "\t\t\t");
+                                        _builder.append(");");
+                                        _builder.newLineIfNotEmpty();
+                                      }
+                                    }
+                                    _builder.append("\t");
+                                    _builder.append("\t");
+                                    _builder.append("\t");
+                                    _builder.append("//");
+                                    _builder.append(p = (p + 1), "\t\t\t");
+                                    _builder.newLineIfNotEmpty();
+                                  }
+                                }
+                                _builder.append("\t");
+                                _builder.append("\t");
+                                _builder.append("}");
+                                _builder.newLine();
+                              }
+                            }
+                            _builder.append("\t");
+                            _builder.append("\t");
+                            _builder.append("//");
+                            _builder.append(k = (k + 1), "\t\t");
+                            _builder.newLineIfNotEmpty();
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                {
+                  if ((defaultDes != null)) {
+                    {
+                      if (notDefault) {
+                        _builder.append("\t");
+                        _builder.append("\t");
+                        _builder.append("else {");
+                        _builder.newLine();
+                      }
+                    }
+                    _builder.append("\t");
+                    _builder.append("\t");
+                    int p_1 = 0;
+                    _builder.newLineIfNotEmpty();
+                    {
+                      EList<Pagina> _paginas_2 = wizard.getPaginas();
+                      for(final Pagina paginaDes_1 : _paginas_2) {
+                        {
+                          boolean _equals_2 = defaultDes.getName().equals(paginaDes_1.getName());
+                          if (_equals_2) {
+                            _builder.append("\t");
+                            _builder.append("\t");
+                            _builder.append("window.showPage(Wizard.PAGE_");
+                            _builder.append(p_1, "\t\t");
+                            _builder.append(");");
+                            _builder.newLineIfNotEmpty();
+                          }
+                        }
+                        _builder.append("\t");
+                        _builder.append("\t");
+                        _builder.append("//");
+                        _builder.append(p_1 = (p_1 + 1), "\t\t");
+                        _builder.newLineIfNotEmpty();
+                      }
+                    }
+                    {
+                      if (notDefault) {
+                        _builder.append("\t");
+                        _builder.append("\t");
+                        _builder.append("}");
+                        _builder.newLine();
+                      }
+                    }
+                  }
+                }
+                _builder.append("\t");
+                _builder.append("}");
+                _builder.newLine();
+              }
+            }
+            _builder.append("\t");
+            _builder.append("//");
+            _builder.append(j = (j + 1), "\t");
+            _builder.newLineIfNotEmpty();
+          }
+        }
+        _builder.append("\t");
+        _builder.append("//");
+        _builder.append(i = (i + 1), "\t");
+        _builder.newLineIfNotEmpty();
+      }
+    }
+    _builder.append("\t");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.append("}");
+    _builder.newLine();
+    return _builder;
+  }
+  
+  public CharSequence compileClose() {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("package listeners;");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("import java.awt.event.ActionEvent;");
+    _builder.newLine();
+    _builder.append("import java.awt.event.ActionListener;");
+    _builder.newLine();
+    _builder.append("import javax.swing.JFrame;");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("public class CloseWizardListener implements ActionListener {");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("private JFrame window;");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("public CloseWizardListener(JFrame window) {");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("this.window = window;");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("@Override");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("public void actionPerformed(ActionEvent arg0) {");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("window.setVisible(false);");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("window.dispose();");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.append("}");
+    _builder.newLine();
+    return _builder;
+  }
+  
+  public CharSequence compileMessage() {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("package listeners;");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("import java.awt.event.ActionEvent;");
+    _builder.newLine();
+    _builder.append("import java.awt.event.ActionListener;");
+    _builder.newLine();
+    _builder.append("import javax.swing.JFrame;");
+    _builder.newLine();
+    _builder.append("import javax.swing.JOptionPane;");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("public class ShowMessageListener implements ActionListener {");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("private JFrame window;");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("private String message;");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("public ShowMessageListener(JFrame window, String message) {");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("this.window = window;");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("this.message = message;");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("@Override");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("public void actionPerformed(ActionEvent arg0) {");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("JOptionPane.showMessageDialog(window, message);");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("}");
+    _builder.newLine();
+    _builder.append("}");
+    _builder.newLine();
+    return _builder;
+  }
+  
+  public CharSequence compileMain() {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("package main;");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("import wizard.Wizard;");
+    _builder.newLine();
+    _builder.newLine();
+    _builder.append("public class Main {");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("public static void main(String[] args) {");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("Wizard wizard = new Wizard();");
+    _builder.newLine();
+    _builder.append("\t\t");
+    _builder.append("wizard.showWizard();");
     _builder.newLine();
     _builder.append("\t");
     _builder.append("}");
