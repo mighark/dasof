@@ -104,7 +104,7 @@ public class WizardSemanticSequencer extends AbstractDelegatingSemanticSequencer
 		}
 		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
 		feeder.accept(grammarAccess.getBotonMensajeAccess().getTagEStringParserRuleCall_0_0(), semanticObject.getTag());
-		feeder.accept(grammarAccess.getBotonMensajeAccess().getMensajeEStringParserRuleCall_2_0(), semanticObject.getMensaje());
+		feeder.accept(grammarAccess.getBotonMensajeAccess().getMensajeEStringParserRuleCall_3_0(), semanticObject.getMensaje());
 		feeder.finish();
 	}
 	

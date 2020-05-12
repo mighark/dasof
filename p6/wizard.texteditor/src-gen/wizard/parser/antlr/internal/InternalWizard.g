@@ -477,6 +477,10 @@ rulePagina returns [EObject current=null]
 		{
 			newLeafNode(otherlv_20, grammarAccess.getPaginaAccess().getRightCurlyBracketKeyword_9());
 		}
+		otherlv_21=';'
+		{
+			newLeafNode(otherlv_21, grammarAccess.getPaginaAccess().getSemicolonKeyword_10());
+		}
 	)
 ;
 
@@ -740,12 +744,16 @@ ruleBotonMensaje returns [EObject current=null]
 		{
 			newLeafNode(otherlv_1, grammarAccess.getBotonMensajeAccess().getMensajeKeyword_1());
 		}
+		otherlv_2=':'
+		{
+			newLeafNode(otherlv_2, grammarAccess.getBotonMensajeAccess().getColonKeyword_2());
+		}
 		(
 			(
 				{
-					newCompositeNode(grammarAccess.getBotonMensajeAccess().getMensajeEStringParserRuleCall_2_0());
+					newCompositeNode(grammarAccess.getBotonMensajeAccess().getMensajeEStringParserRuleCall_3_0());
 				}
-				lv_mensaje_2_0=ruleEString
+				lv_mensaje_3_0=ruleEString
 				{
 					if ($current==null) {
 						$current = createModelElementForParent(grammarAccess.getBotonMensajeRule());
@@ -753,7 +761,7 @@ ruleBotonMensaje returns [EObject current=null]
 					set(
 						$current,
 						"mensaje",
-						lv_mensaje_2_0,
+						lv_mensaje_3_0,
 						"wizard.Wizard.EString");
 					afterParserOrEnumRuleCall();
 				}

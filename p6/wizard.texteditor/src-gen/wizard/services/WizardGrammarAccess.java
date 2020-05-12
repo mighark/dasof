@@ -202,18 +202,20 @@ public class WizardGrammarAccess extends AbstractGrammarElementFinder {
 		private final Assignment cBotonesAssignment_8_1 = (Assignment)cGroup_8.eContents().get(1);
 		private final RuleCall cBotonesBotonParserRuleCall_8_1_0 = (RuleCall)cBotonesAssignment_8_1.eContents().get(0);
 		private final Keyword cRightCurlyBracketKeyword_9 = (Keyword)cGroup.eContents().get(9);
+		private final Keyword cSemicolonKeyword_10 = (Keyword)cGroup.eContents().get(10);
 		
 		//Pagina:
 		//	'Pagina'
 		//	name=EString
 		//	':' ('campos' '{' camposTexto+=CampoTexto ("," camposTexto+=CampoTexto)* '}')? ('casillas' '{'
 		//	casillasVerif+=CasillaVerif ("," casillasVerif+=CasillaVerif)* '}')?
-		//	'botones' '{' botones+=Boton ("," botones+=Boton)* '}';
+		//	'botones' '{' botones+=Boton ("," botones+=Boton)* '}'
+		//	';';
 		@Override public ParserRule getRule() { return rule; }
 		
 		//'Pagina' name=EString ':' ('campos' '{' camposTexto+=CampoTexto ("," camposTexto+=CampoTexto)* '}')? ('casillas' '{'
 		//casillasVerif+=CasillaVerif ("," casillasVerif+=CasillaVerif)* '}')? 'botones' '{' botones+=Boton (","
-		//botones+=Boton)* '}'
+		//botones+=Boton)* '}' ';'
 		public Group getGroup() { return cGroup; }
 		
 		//'Pagina'
@@ -314,6 +316,9 @@ public class WizardGrammarAccess extends AbstractGrammarElementFinder {
 		
 		//'}'
 		public Keyword getRightCurlyBracketKeyword_9() { return cRightCurlyBracketKeyword_9; }
+		
+		//';'
+		public Keyword getSemicolonKeyword_10() { return cSemicolonKeyword_10; }
 	}
 	public class CampoTextoElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "wizard.Wizard.CampoTexto");
@@ -467,15 +472,16 @@ public class WizardGrammarAccess extends AbstractGrammarElementFinder {
 		private final Assignment cTagAssignment_0 = (Assignment)cGroup.eContents().get(0);
 		private final RuleCall cTagEStringParserRuleCall_0_0 = (RuleCall)cTagAssignment_0.eContents().get(0);
 		private final Keyword cMensajeKeyword_1 = (Keyword)cGroup.eContents().get(1);
-		private final Assignment cMensajeAssignment_2 = (Assignment)cGroup.eContents().get(2);
-		private final RuleCall cMensajeEStringParserRuleCall_2_0 = (RuleCall)cMensajeAssignment_2.eContents().get(0);
+		private final Keyword cColonKeyword_2 = (Keyword)cGroup.eContents().get(2);
+		private final Assignment cMensajeAssignment_3 = (Assignment)cGroup.eContents().get(3);
+		private final RuleCall cMensajeEStringParserRuleCall_3_0 = (RuleCall)cMensajeAssignment_3.eContents().get(0);
 		
 		//BotonMensaje:
 		//	tag=EString
-		//	'mensaje' mensaje=EString;
+		//	'mensaje' ':' mensaje=EString;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//tag=EString 'mensaje' mensaje=EString
+		//tag=EString 'mensaje' ':' mensaje=EString
 		public Group getGroup() { return cGroup; }
 		
 		//tag=EString
@@ -487,11 +493,14 @@ public class WizardGrammarAccess extends AbstractGrammarElementFinder {
 		//'mensaje'
 		public Keyword getMensajeKeyword_1() { return cMensajeKeyword_1; }
 		
+		//':'
+		public Keyword getColonKeyword_2() { return cColonKeyword_2; }
+		
 		//mensaje=EString
-		public Assignment getMensajeAssignment_2() { return cMensajeAssignment_2; }
+		public Assignment getMensajeAssignment_3() { return cMensajeAssignment_3; }
 		
 		//EString
-		public RuleCall getMensajeEStringParserRuleCall_2_0() { return cMensajeEStringParserRuleCall_2_0; }
+		public RuleCall getMensajeEStringParserRuleCall_3_0() { return cMensajeEStringParserRuleCall_3_0; }
 	}
 	public class BotonCerrarElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "wizard.Wizard.BotonCerrar");
@@ -670,7 +679,8 @@ public class WizardGrammarAccess extends AbstractGrammarElementFinder {
 	//	name=EString
 	//	':' ('campos' '{' camposTexto+=CampoTexto ("," camposTexto+=CampoTexto)* '}')? ('casillas' '{'
 	//	casillasVerif+=CasillaVerif ("," casillasVerif+=CasillaVerif)* '}')?
-	//	'botones' '{' botones+=Boton ("," botones+=Boton)* '}';
+	//	'botones' '{' botones+=Boton ("," botones+=Boton)* '}'
+	//	';';
 	public PaginaElements getPaginaAccess() {
 		return pPagina;
 	}
@@ -727,7 +737,7 @@ public class WizardGrammarAccess extends AbstractGrammarElementFinder {
 	
 	//BotonMensaje:
 	//	tag=EString
-	//	'mensaje' mensaje=EString;
+	//	'mensaje' ':' mensaje=EString;
 	public BotonMensajeElements getBotonMensajeAccess() {
 		return pBotonMensaje;
 	}

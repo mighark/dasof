@@ -25,7 +25,8 @@ Pagina returns Pagina:
 	':'
 		('campos' '{' camposTexto+=CampoTexto ( "," camposTexto+=CampoTexto)* '}')?
 		('casillas' '{' casillasVerif+=CasillaVerif ( "," casillasVerif+=CasillaVerif)* '}')?
-		'botones' '{' botones+=Boton ( "," botones+=Boton)* '}';
+		'botones' '{' botones+=Boton ( "," botones+=Boton)* '}'
+	';';
 
 CampoTexto returns CampoTexto:
 	'CampoTexto'
@@ -47,7 +48,7 @@ BotonNavegar returns BotonNavegar:
 
 BotonMensaje returns BotonMensaje:
 	tag=EString
-	'mensaje' mensaje=EString;
+	'mensaje' ':' mensaje=EString;
 
 BotonCerrar returns BotonCerrar:
 	{BotonCerrar}
