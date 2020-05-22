@@ -44,5 +44,7 @@ Práctica 5:
   6. (no indicado) no se ha implementado moverse del destino de una escalera a la escalera
   
 Práctica 6:
-- Calificación: TBD
-- Fallos: TBD
+- Calificación: 9,5
+- Fallos:
+  1. si un botón de navegación tiene varios destinos dependientes de casilla, sólo "funciona" uno de ellos
+  2. la primera página que muestra el wizard no es la página marcada como inicial
