@@ -1,7 +1,7 @@
 # Prácticas de Desarrollo Automatizado de Software
 Asignatura Optativa de 4º de Ingeniería Informática / 5º de Doble Grado de Ingeniería Informática y Matemáticas en la UAM
 
-Este material sirve únicamente como apoyo para el caso de estar atascado. Por la normativa de la escuela, no está permitida la copia: no me hago responsable si algún alumno de la escuela entrega este material como suyo.
+Este material es propiedad de la EPS y tiene como único autor a Miguel García Moya. Su propósito es únicamente como apoyo a otros alumnos. Por la normativa de la escuela, no está permitida la copia de material de otros años, por lo que no se permite usar este repositorio con otro propósito.
 
 ## Información sobre calificaciones de cada práctica:
 
